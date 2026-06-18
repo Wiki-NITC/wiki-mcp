@@ -25,6 +25,11 @@ fi
 
 cd "$(dirname "$0")/.."
 
+# Load credentials from .env if present
+if [ -f .env ]; then
+  set -a; source .env; set +a
+fi
+
 if [ ! -f config.json ]; then
   cat > config.json << 'EOF'
 {
