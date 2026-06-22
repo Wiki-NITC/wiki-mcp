@@ -144,7 +144,11 @@ Always add:
 
 If `Template:Institute Fee Structure` does not yet exist, create it on the wiki.
 
-Go to `https://wiki.fosscell.org/Template:Institute_Fee_Structure?action=edit` and paste:
+### 1. Recommended: Use the template-creator skill
+Load the `template-creator` skill and ask it to create `Template:Institute Fee Structure` — it will generate the template, cargo table, form, preload, and helper page automatically.
+
+### 2. Fallback: Manual creation
+If template-creator is not available, paste the following at `https://wiki.fosscell.org/Template:Institute_Fee_Structure?action=edit`:
 
 ```wikitext
 <noinclude>{{#cargo_declare:_table=InstituteFees
