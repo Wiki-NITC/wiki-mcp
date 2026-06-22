@@ -99,9 +99,13 @@ Always add at least:
 
 ## Wiki template setup
 
-If `Template:Bus Route` does not yet exist, create it on the wiki:
+If `Template:Bus Route` does not yet exist, create it on the wiki.
 
-Go to `https://wiki.fosscell.org/Template:Bus_Route?action=edit` and paste:
+### 1. Recommended: Use the template-creator skill
+Load the `template-creator` skill and ask it to create `Template:Bus Route` — it will generate the template, cargo table, form, preload, and helper page automatically.
+
+### 2. Fallback: Manual creation
+If template-creator is not available, paste the following wikitext at `https://wiki.fosscell.org/Template:Bus_Route?action=edit`:
 
 ```wikitext
 <noinclude>{{#cargo_declare:_table=BusRoutes
