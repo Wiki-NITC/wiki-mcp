@@ -1,17 +1,19 @@
 ---
 name: template-creator
-description: Create new structured wiki templates with Cargo declare/store, infobox display, Page Forms, preloads, and helper pages. For when a new data type needs structured storage on the NITC Wiki.
+description: Create new wiki templates with infobox display, Page Forms, preloads, and helper pages. For templates that don't need Cargo-backed structured storage. Cargo templates are best created manually.
 ---
 
 # Template Creator
 
-Use this skill when asked to **design and create a new structured template** on the NITC Wiki — including the Cargo table, infobox display, Page Form, preload, and helper page.
+Use this skill when asked to **design and create a new template** on the NITC Wiki — including the infobox display, Page Form, preload, and helper page.
+
+This skill covers **templates without Cargo tables**. If structured querying (Cargo) is needed, create the template manually and delegate Cargo setup to a human.
 
 ---
 
 ## Golden rules
 
-1. **Reuse before create.** Check if a template for this data already exists: `search-page("Template:Your Idea")` or `templates.md`
+1. **Reuse before create.** Check if a template for this already exists: `search-page("Template:Your Idea")`
 2. **Never edit** an existing Cargo-declaring template (`{{#cargo_declare:}}` / `{{#cargo_store:}}`) — that requires a table rebuild and human review
 3. **Brand-new templates are safe** — no pages depend on them yet
 4. **Match the wiki's style** — copy the pattern from existing templates like `Template:Bus Route` or `Template:Hostel Fee Structure`
@@ -20,11 +22,11 @@ Use this skill when asked to **design and create a new structured template** on 
 
 ## What to create (in order)
 
-For each new structured data type, you need up to 4 wiki pages:
+For each new template, you need up to 4 wiki pages:
 
 | # | Page | Purpose |
 |---|---|---|
-| 1 | `Template:Your Name` | Cargo declare + cargo store + display |
+| 1 | `Template:Your Name` | Template display |
 | 2 | `Form:Your Name` | Web UI for humans to fill in the template |
 | 3 | `Template:Your Name/preload` | Pre-filled content for the create form |
 | 4 | `WIKI FOSSCELL NITC:Create a Your Name` | Helper page with an `<inputbox>` button |
@@ -35,32 +37,9 @@ If the MCP session has write access, create them directly. If not (anonymous ses
 
 ## Step 1: Template anatomy
 
-A template page has two sections:
+A template page has a `<noinclude>` section for documentation and an `<includeonly>` section for the display.
 
-### `<noinclude>` section — Cargo declaration + docs
-
-```wikitext
-<noinclude>{{#cargo_declare:_table=TableName
-|field1=String
-|field2=Integer
-|field3=Date
-|field4=Text
-|field5=Boolean
-}}</noinclude>
-```
-
-Cargo field types:
-
-| Type | Use for |
-|---|---|
-| `String` | Short text, names, categories |
-| `Text` | Longer text, descriptions, notes |
-| `Integer` | Whole numbers (amounts, counts) |
-| `Date` | Dates in YYYY-MM-DD format |
-| `Boolean` | Yes/No, True/False |
-| `Coordinates` | Lat, lon for maps |
-
-After the declare comes the documentation (usage, parameter table, categories):
+### `<noinclude>` section — Documentation
 
 ```wikitext
 <noinclude>
@@ -82,26 +61,14 @@ Description.
 </noinclude>
 ```
 
-### `<includeonly>` section — Cargo store + display
+### `<includeonly>` section — Display
 
-Always starts with `{{#cargo_store:}}` — writes the data to the Cargo table:
-
-```wikitext
-<includeonly>{{#cargo_store:_table=TableName
-|field1={{{field1|}}}
-|field2={{{field2|}}}
-|field3={{{field3|}}}
-|field4={{{field4|}}}
-|field5={{{field5|}}}
-}}
-```
-
-Then add the display. Three display patterns:
+Add the display. Three display patterns:
 
 **Pattern A: Infobox (right-floated table)** — for data that has one record per page (like `{{Infobox Hostel}}`)
 
 ```wikitext
-{| class="wikitable" style="float:right; margin-left:1em; width:300px;"
+<includeonly>{| class="wikitable" style="float:right; margin-left:1em; width:300px;"
 ! colspan="2" style="background:#2980B9; color:white; text-align:center;" | Title
 |-
 ! Field 1
@@ -110,24 +77,17 @@ Then add the display. Three display patterns:
 ! Field 2
 | {{{field2}}}
 |}
+</includeonly>
 ```
 
-**Pattern B: Minimal (no display box)** — for templates that are used many times on a single page (like `{{Event}}`, `{{Institute Fee Structure}}`). Just the cargo_store, no display.
+**Pattern B: Minimal** — for templates used many times on a single page (like `{{Event}}`). No display box.
 
 **Pattern C: Styled card** — for visually prominent entries (like `{{Magazine Submission}}`)
 
 ### Complete example
 
 ```wikitext
-<noinclude>{{#cargo_declare:_table=ExampleData
-|name=String
-|year=Integer
-|description=Text
-}}</noinclude><includeonly>{{#cargo_store:_table=ExampleData
-|name={{{name|}}}
-|year={{{year|}}}
-|description={{{description|}}}
-}}{| class="wikitable" style="float:right; margin-left:1em; width:300px;"
+<includeonly>{| class="wikitable" style="float:right; margin-left:1em; width:300px;"
 ! colspan="2" style="background:#2C3E50; color:white; text-align:center;" | {{{name}}}
 |-
 ! Year
@@ -216,7 +176,7 @@ Place at `WIKI FOSSCELL NITC:Create a Your Name`:
 {{DISPLAYTITLE:Create a Your Name}}
 <div style="max-width: 700px; margin: 0 auto; padding: 1em;">
 <div style="text-align: center; margin-bottom: 1.5em;">
-<div style="font-size: 1.5em; font-weight: bold;">📄 Create a Your Name</div>
+<div style="font-size: 1.5em; font-weight: bold;">Create a Your Name</div>
 <div style="color: var(--color-base--subtle); margin-top: 0.5em;">Description...</div>
 </div>
 
@@ -241,8 +201,8 @@ Naming instructions...
 
 ## Workflow summary
 
-1. Identify the data fields and their types
-2. Write the template (declare + store + display) — show the user
+1. Identify the template fields
+2. Write the template display — show the user
 3. Create `Template:Your Name` on the wiki
 4. Create `Form:Your Name` on the wiki
 5. Create `Template:Your Name/preload` on the wiki
@@ -256,7 +216,6 @@ Naming instructions...
 - [ ] Does a template for this already exist? (check via `search-page`)
 - [ ] Is this a **new** template? (safe) Or editing an existing one? (stop → human review)
 - [ ] Are field names consistent with existing templates (snake_case)?
-- [ ] Does the Cargo table name match the template name?
 - [ ] Is the form's `{{{for template|}}}` pointing to the right template?
 - [ ] Is the preload URL correct (`Template:Your Name/preload`)?
 - [ ] Does the helper page's `default=` suggest the right naming convention?
