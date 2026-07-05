@@ -7,7 +7,7 @@ description: Create new wiki templates with infobox display, Page Forms, preload
 
 Use this skill when asked to **design and create a new template** on the NITC Wiki — including the infobox display, Page Form, preload, and helper page.
 
-This skill covers **templates without Cargo tables**. If structured querying (Cargo) is needed, create the template manually and delegate Cargo setup to a human.
+This skill covers **templates without Cargo tables**. If the user requests a Cargo-backed template, **stop immediately**, inform the user that Cargo templates must be created manually, and do not proceed.
 
 ---
 
