@@ -195,9 +195,13 @@ higher, e.g. "urgent" or "blocker" language).
 
 ### 5. Deduplicate against existing tasks
 
+**Run this step for ALL action items before showing any Y/N/D prompt or
+creating anything.** Do not skip or defer dedup to after the review.
+
 For each extracted action item:
 
-1. Search WikiTasks via `parse-wikitext`:
+1. Search WikiTasks via `parse-wikitext` using the first 2-3 significant
+   keywords from the action item title:
    ```
    {{#cargo_query:tables=WikiTasks
    |fields=_pageName,task_title,status
@@ -205,15 +209,29 @@ For each extracted action item:
    |format=ul
    |limit=10}}
    ```
-   Use the first 2-3 significant keywords from the action item as the search
-   term. Try multiple keyword combinations if the first yields no results.
+   If the first keyword combination returns no results, retry with individual
+   keywords (e.g. search "Windows" separately from "MCP" separately from
+   "install") to catch semantically related tasks with different wording.
 
-2. If a matching active (non-done, non-cancelled) task exists:
+2. Also run a broad search by assignee to catch any open tasks already
+   assigned to the same person covering a similar topic:
+   ```
+   {{#cargo_query:tables=WikiTasks
+   |fields=_pageName,task_title,status
+   |where=assignee='<username>' AND status!='done' AND status!='cancelled'
+   |format=ul
+   |limit=20}}
+   ```
+   Scan the results for semantic overlap with the action item even if no
+   keyword matches -- e.g. "Setup Windows installer script" covers "Perform
+   clean Windows installation for MCP script".
+
+3. If a matching active task exists:
    - **Skip creation.**
    - Note in the minutes page:
      `Already tracked by [[WIKI FOSSCELL NITC:Tasks/<existing>|existing task]]`.
 
-3. If no match found, proceed to create.
+4. If no match found, mark as "to create" and proceed to Step 6.
 
 ### 6. Create task pages
 
