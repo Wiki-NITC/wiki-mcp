@@ -82,6 +82,10 @@ appeared on the board and had to be normalized away — the parenthetical
 notes above show where each maps). No spaces after commas in
 multi-category lists (`a,b`, not `a, b` — the space breaks `HOLDS` queries).
 
+**Exception:** onboarding tasks (`Onboard <Name>`, `Hello <Name>`) carry
+**no** team category — leave `category` empty. Onboarding is people work,
+not team-queue work; the newcomer's team goes in the description.
+
 ---
 
 ## 5. Task page structure
