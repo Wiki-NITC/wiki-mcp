@@ -207,7 +207,10 @@ authenticated user, automatically run the `onboarding` skill in full — setup
 check (start onboarding immediately if incomplete; writes still need their
 confirmation), their open/overdue tasks, and recommended unclaimed tasks for
 their team — delivered as a compact dashboard opening your first reply, then
-proceed with their actual request. Anonymous sessions skip this.
+proceed with their actual request. Anonymous sessions get no dashboard — but
+if they ask about contributing or a write fails with `authentication`, guide
+them through the account → bot password → `.env` funnel (the `onboarding`
+skill's Step 0).
 
 | Task | Skill |
 |---|---|

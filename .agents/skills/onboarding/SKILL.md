@@ -9,12 +9,27 @@ One skill for "get me set up" and "what's on my plate". Run it for a brand-new
 member and it walks them through onboarding; run it for an existing member and
 it becomes their task dashboard with recommendations.
 
+## The three user states
+
+By the time someone's `whoami` shows a real username, they have already
+finished the wiki's documented setup funnel: account with an @nitc.ac.in
+email → bot password → credentials in `.env`
+([[HowTo:Create a Wiki Account]] → [[HowTo:Create a Bot Password]] →
+[[HowTo:Wiki-MCP Setup Guide]] on the live wiki). So:
+
+| State | Who | What this skill does |
+|---|---|---|
+| Anonymous | New person without an account, or a read-only browser | Nothing proactive. But the moment they ask about contributing/editing, or a write fails with `authentication` — walk them through the funnel (see Step 0) |
+| Authenticated, incomplete | Has account + bot password, but missing profile / Hello task / roster row | Full dashboard + start onboarding immediately |
+| Authenticated, complete | Existing member | Full dashboard, then assist |
+
 ## When to run
 
 **Automatically, in full, at the start of every session.** The user never
 asks for this — it self-initiates on their first message:
 
-- `whoami` anonymous → **skip silently** (read-only visitor, don't bother them).
+- `whoami` anonymous → **no proactive dashboard** (don't nag read-only
+  visitors). Step 0 fires only when contributing comes up.
 - Authenticated → run Steps 1-3 **and** Step 5 unprompted, and open your
   first reply with the complete dashboard:
 
@@ -38,6 +53,24 @@ Everything here is **read-first**: gather all the facts, present one picture,
 then act only on what the human approves.
 
 ---
+
+## Step 0 - Anonymous user wants to contribute
+
+Trigger: an anonymous session asks how to contribute/edit, or attempts a
+write and gets an `authentication` error. Turn the dead end into onboarding
+— walk them through the wiki's own funnel, in order:
+
+1. **Account**: [[HowTo:Create a Wiki Account]] — needs an @nitc.ac.in
+   email, plus the confirmation email (check spam).
+2. **Bot password**: [[HowTo:Create a Bot Password]] — bot name `wiki-mcp`,
+   tick exactly the four documented permissions, copy the password
+   immediately (shown once).
+3. **Credentials**: `.env` in the wiki-mcp folder (`BOT_USERNAME`,
+   `BOT_PASSWORD`), then fully restart the client.
+
+Tell them: next session, this skill takes over automatically and finishes
+their onboarding (profile, Hello task, roster). Reading needs none of this
+— never push the funnel on someone who just wants to browse.
 
 ## Step 1 - Who are you
 

@@ -151,7 +151,10 @@ const NITC_INSTRUCTIONS =
   "their confirmation); (2) their tasks - query WikiTasks for their assigned " +
   "open/overdue items; (3) top unclaimed tasks recommended for their roster " +
   "team. Open your first reply with this compact dashboard, then handle " +
-  "whatever they asked. Skip all of it for anonymous read-only sessions. Highlights: meeting minutes live at \"WIKI FOSSCELL " +
+  "whatever they asked. Anonymous sessions: no dashboard, but if the user " +
+  "asks about contributing or a write fails with an authentication error, " +
+  "guide them through \"HowTo:Create a Wiki Account\" then \"HowTo:Create a " +
+  "Bot Password\" on the wiki, then credentials in .env and a client restart. Highlights: meeting minutes live at \"WIKI FOSSCELL " +
   "NITC:Meetings/YYYY-MM-DD\"; events at \"YYYY:EventName\" with a redirect; " +
   "task pages at \"WIKI FOSSCELL NITC:Tasks/<name>\" using Template:Task with " +
   "only the documented status/priority/category values; edit summaries are " +
