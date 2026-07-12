@@ -2,30 +2,74 @@
 
 All notable changes to this repo are documented here.
 
-## [Unreleased]
+## [0.2.0] — 2026-07-12
+
+Complete revamp of rules, skills, and scripts. An audit found 26 verified
+defects (contradictions, hardcoded rotting dates, dead-end skill references,
+validator bugs); this release fixes them and adds five new skills.
 
 ### Changed
-- **Bumped the pinned upstream server** from `0.10.0` to `0.12.0` in
-  `scripts/start-mcp.sh`, matching the version actually in use (which was
-  drifting from the documented pin since the live Claude Desktop config
-  called `@latest` directly, bypassing this script).
-- **`.env` credentials now actually take effect.** `start-mcp.sh` previously
-  sourced `.env` but never used the resulting variables. It now writes
-  `BOT_USERNAME`/`BOT_PASSWORD` from `.env` into `config.json` (requires
-  `jq`), so `.env` is the one place to update on a bot-password rotation.
-  See `.env.example` and the updated "Editing the wiki" section in
-  `README.md`.
+- **Upstream server pinned at `0.13.1`** (was drifting: README said 0.10.0,
+  script said 0.12.0, live configs called `@latest`). Tested at the protocol
+  level: initialize + tools/list clean on stdio; the discovery regression
+  reported in issue #17 did not reproduce.
+- **Single cross-platform Node launcher** (`scripts/start-mcp.js`) replaces
+  the bash-only path; `start-mcp.sh` is now a thin wrapper and `jq` is no
+  longer needed. Fixes a real Windows bug where stdio inherit through
+  cmd.exe silently broke MCP discovery. `opencode.json` launches via node.
+- **Single validator** (`scripts/validate-config.js`) behind the `.sh` and
+  `.ps1` wrappers. Fixes the bash bug where per-wiki field failures never
+  affected the exit code; the API being unreachable is now a FAIL; Windows
+  gets the Step 5 authenticated rights check for the first time.
+- **`.env` credentials take effect** and win over hand-edited `config.json`
+  values (with a printed notice). `.env` is the one place to update on a
+  bot-password rotation.
+- **Rules consolidated to single owners.** `categories.md` owns category
+  names; `uploads.md` owns upload policy; `structured-data.md` owns the
+  cargo_query-via-parse-wikitext technique; `Agents.md` no longer contradicts
+  itself about `bot`/`minor`/`maxlag` (the edit tools do expose `bot` and
+  `latestId`; they do not expose `minor`/`maxlag`/`assert=bot`).
+- **`editing.md` no longer recommends `{{Cite web}}`/`{{Cite book}}`** — CS1
+  is not imported; that advice contradicted `templates.md` and produced red
+  links.
+- **`task-board.md` documents the `cancelled` status**, the `created` param
+  vs `created_date` Cargo field split, and valid category values only.
+- **Edit summary format is now plain ASCII**: `Bot: <action> - <agent>`.
+- **magazine-archiver merged into magazine-submission.** The archiver's
+  format bypassed the Cargo table entirely and used invalid type values
+  (`Comic`/`Artwork` vs the accepted `Comics`/`Art`).
+- **Skills no longer hardcode dates, rosters, or table lists.** Examples use
+  a `<TODAY>` placeholder; rosters are discovered by prefix search; Cargo
+  tables come from live discovery (the old hardcoded list included a table
+  that no longer exists and missed four that do).
 
 ### Added
-- **`validate-config.sh` Step 5: authenticated rights check.** When
-  username/password are configured, the script now logs in and compares the
-  account's rights against what editing requires (`edit`, `createpage`,
-  `editinterface`), surfacing a permission gap before an agent hits it
-  mid-task instead of after.
-- **`docs/rotating-credentials.md`** — the bot-password rotation runbook,
-  including why a full client restart is required.
-- **`rules/templates.md`** now documents that this wiki protects `Template:`
-  pages with `editinterface`, not the more common `editprotected`/`sysop`.
+- **`rules/agent-conventions.md`** — single owner of cross-cutting agent
+  rules: edit summaries, preview-before-save (batch cosmetic changes; no
+  more 12-revision styling sessions), the seven MCP error categories with
+  required responses, date handling, roster discovery, known server failure
+  modes (including stuck extension probes after a network outage), and the
+  Cargo-templates-are-admin-only rule.
+- **Five new skills**: `board-janitor` (task board hygiene), 
+  `weekly-update-reporter` (weekly call updates from real edits),
+  `wiki-gardener` (uncategorized/orphan backlog), `recent-changes-patroller`
+  (quality patrol + churn detection), `rules-drift-auditor` (repo-vs-wiki
+  drift reports).
+- **Windows support end to end**: same launcher, same validator, documented
+  Claude Desktop setup. Supersedes PR #4; closes issue #2.
+
+### Removed
+- **`wiki-templates-catalogue.md`** — 669-line orphan referenced by nothing
+  and already stale; live drift checking is now the `rules-drift-auditor`
+  skill's job.
+- **`magazine-archiver` skill** (merged, see above).
+
+### Earlier unreleased work folded into this release
+- `validate-config` Step 5 authenticated rights check (`edit`, `createpage`,
+  `editinterface`).
+- `docs/rotating-credentials.md` rotation runbook.
+- `rules/templates.md` note that this wiki protects `Template:` with
+  `editinterface`, not `editprotected`/`sysop`.
 
 ## [0.1.0-beta] — 2026-06-09
 

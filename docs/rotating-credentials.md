@@ -1,8 +1,8 @@
 # Rotating the bot password
 
-The bot account (`JayJayTee@mcp-bot` at time of writing) authenticates every
-edit this MCP server makes. Rotate its password periodically, or immediately
-if it may have leaked (shared in a chat, committed by accident, etc.).
+Your bot account (`<YourUsername>@<bot-name>`) authenticates every edit this
+MCP server makes. Rotate its password periodically, or immediately if it may
+have leaked (shared in a chat, committed by accident, etc.).
 
 ## Why a restart is required
 
@@ -15,9 +15,8 @@ restarted and re-reads the config from disk.
 ## Steps
 
 1. Go to [`Special:BotPasswords`](https://wiki.fosscell.org/Special:BotPasswords)
-   on the wiki, log in as the account that owns the bot password
-   (`JayJayTee` at time of writing).
-2. Find the bot (`mcp-bot`) in the list and click it, then click **Update** to
+   on the wiki, log in as the account that owns the bot password.
+2. Find your bot name in the list and click it, then click **Update** to
    regenerate its password. (Don't create a new bot password unless you also
    intend to retire the old name — regenerating keeps the same grants.)
 3. Copy the new password shown on screen. It is only shown once.
