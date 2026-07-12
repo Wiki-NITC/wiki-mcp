@@ -16,16 +16,16 @@ page-by-page.
 
 ## The tables
 
-As of 2026-06 the wiki defines these Cargo tables (verify with
-`cargo-list-tables`):
+**Never rely on a hardcoded table list — discover the live set at the start
+of every audit.** Tables appear and disappear as templates evolve (e.g.
+`Organizations` replaced the old `Clubs` table; ingest skills add tables like
+`BusRoutes`, `HostelFees`, `InstituteFees`).
 
-```
-BookClubMeetings, CampusLocations, Centres, Clubs, Communities,
-Events, FOSSCellActivities, FOSSCellEvents, MagazineSubmissions,
-MimeTeamMembers, UserProfiles, WikiTasks
-```
-
-Use `cargo-describe-table` to get each table's field schema before querying.
+1. Preferred: `cargo-list-tables`, then `cargo-describe-table` per table for
+   field schemas.
+2. If those tools are restricted or stuck (see failure-modes note below):
+   fetch `Special:CargoTables` in a browser, or infer tables from the
+   Cargo-declaring templates (`rules/templates.md` lists the data templates).
 
 ---
 
@@ -62,6 +62,14 @@ Notes on this technique:
 - `group by=` and `order by=` are supported (with spaces, unlike the API).
 - Try the `cargo-query` tool first; if it returns `permission_denied`, switch
   to this method. Do not retry the API.
+- **Failure mode**: after a network outage the `cargo-*` tools can keep
+  failing with "Wiki could not be reached to check for the extension" even
+  once the wiki is back — the server cached a failed extension probe. The
+  parser-function method keeps working; a full MCP client restart clears the
+  tools. See `rules/agent-conventions.md` §6.
+
+The canonical description of this technique lives in
+`rules/structured-data.md` § Querying Cargo.
 
 ---
 
@@ -91,8 +99,9 @@ summary `Bot: Fill missing Cargo fields - <agent>`.
 Preload pages (`Template:X/preload`) transclude the data template with blank
 fields, so they store a garbage row in the table.
 
-**Known live example (2026-06)**: `Template:User Profile/preload` stores a row
-in `UserProfiles` with `display_name=User Profile`.
+**Known recurring case**: `Template:User Profile/preload` has stored a junk row
+in `UserProfiles` with `display_name=User Profile` (tracked as repo issue #13).
+Check it and every other `/preload` page each audit.
 
 Detect:
 
@@ -134,8 +143,9 @@ with more fields filled.
 ### 5. Values outside the accepted set
 
 Listing pages filter on exact strings, so near-miss values vanish from lists
-(e.g. `Comic` vs `Comics` in `MagazineSubmissions.type`, which happened in
-2026). Group by the field and eyeball the distinct values:
+(a real past incident: `Comic` stored instead of the accepted `Comics` in
+`MagazineSubmissions.type`, making entries vanish from the magazine index).
+Group by the field and eyeball the distinct values:
 
 ```
 {{#cargo_query:tables=MagazineSubmissions|fields=type,COUNT(*)=n|group by=type|format=ul}}

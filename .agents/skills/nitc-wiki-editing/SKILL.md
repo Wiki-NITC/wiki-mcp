@@ -7,7 +7,7 @@ description: Read, create, or edit pages on the NITC Wiki (wiki.fosscell.org) co
 
 Use this skill whenever you act on **wiki.fosscell.org** (the NIT Calicut /
 FOSSCell wiki) through the MediaWiki MCP server or its API. It exists because this
-wiki is a **structured-data wiki** (MediaWiki 1.45 + Cargo + Semantic MediaWiki +
+wiki is a **structured-data wiki** (MediaWiki + Cargo + Semantic MediaWiki +
 Page Forms) — naive edits silently break queries, dashboards, and the Main Page.
 
 ## Golden rules
@@ -23,10 +23,16 @@ Page Forms) — naive edits silently break queries, dashboards, and the Main Pag
 4. **Never break structured data.** Don't edit a Cargo-declaring template
    (`{{#cargo_declare}}` / `{{#cargo_store}}`), or `Module:` / `Widget:` /
    `GeoJson:` / `smw/schema:` / `MediaWiki:` pages, without human review.
-5. **Uploads are off** in the current beta — don't attempt file uploads.
-6. **Identify edits** with a clear, non-empty summary, e.g.
-   `Bot: Create 2026:Tathva — <agent>`. (The MCP edit tools take a title, content,
-   and summary; they don't expose `bot`/`minor`/`maxlag` flags.)
+5. **Uploads are off** — don't attempt file uploads (see `rules/uploads.md`).
+6. **Preview before saving.** Render risky wikitext with `parse-wikitext` and
+   iterate there — one saved revision per logical change, never a string of
+   styling experiments (`rules/agent-conventions.md` §2).
+7. **Identify edits** with a clear, non-empty summary, e.g.
+   `Bot: Create 2026:Tathva - <agent>`. The edit tools expose a `bot` flag and
+   `latestId` conflict detection; pass `latestId` on every `update-page`. They
+   don't expose `minor`/`maxlag`.
+8. **On write errors**, follow the required responses in
+   `rules/agent-conventions.md` §3 — never silently retry or swallow them.
 
 ## Naming conventions (memorize)
 
@@ -67,6 +73,8 @@ This skill is a summary. The full, verified rules live in the `wiki-mcp` repo �
 read them when you need detail:
 
 - `Agents.md` — master rulebook (identity, read/write rules, what's enforced).
+- `rules/agent-conventions.md` — edit summaries, error handling, preview
+  discipline, known server failure modes.
 - `rules/namespaces.md` — full namespace map + naming conventions.
 - `rules/categories.md` — real category names and the Title-Case-plural convention.
 - `rules/templates.md` — the templates that actually exist (and which don't, e.g.

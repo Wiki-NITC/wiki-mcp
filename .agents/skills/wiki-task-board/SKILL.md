@@ -13,8 +13,10 @@ backed by the `WikiTasks` Cargo table.
 
 ## How to query tasks
 
-The `cargo-query` API tool is permission-restricted for regular accounts.
-Use `{{#cargo_query:}}` through `parse-wikitext` instead:
+Query via `{{#cargo_query:}}` through `parse-wikitext` — the canonical
+technique and its caveats are in `rules/structured-data.md` § Querying Cargo.
+Dates in the examples below are placeholders: resolve `<TODAY>` from your
+environment (`rules/agent-conventions.md` §4).
 
 ### All open tasks, highest priority first
 
@@ -60,7 +62,7 @@ parse-wikitext(wikitext="{{#cargo_query:tables=WikiTasks
 ```
 parse-wikitext(wikitext="{{#cargo_query:tables=WikiTasks
 |fields=_pageName,task_title,assignee,deadline
-|where=deadline < '2026-06-19' AND status != 'done'
+|where=deadline < '<TODAY>' AND status != 'done' AND status != 'cancelled'
 |format=table}}")
 ```
 
@@ -97,7 +99,7 @@ parse-wikitext(wikitext="{{#cargo_query:tables=WikiTasks
 |assignee=
 |deadline=
 |description=
-|created=2026-06-19
+|created=<TODAY>
 }}
 
 == Details ==
@@ -112,10 +114,10 @@ parse-wikitext(wikitext="{{#cargo_query:tables=WikiTasks
 
 ## How to claim a task
 
-1. Fetch the task page: `get-page("WIKI FOSSCELL NITC:Tasks/<task>")`
+1. Fetch the task page **with metadata**: `get-page("WIKI FOSSCELL NITC:Tasks/<task>", metadata=true)` — keep the revision ID.
 2. Set `assignee=<your-username>` in the `{{Task}}` call.
 3. Set `status=claimed`.
-4. Save with summary `Bot: Claim task — <agent>`.
+4. Save with `latestId=<revision ID>` and summary `Bot: Claim task - <agent>`.
 
 ---
 
@@ -124,7 +126,7 @@ parse-wikitext(wikitext="{{#cargo_query:tables=WikiTasks
 1. Fetch the task page.
 2. Set `assignee=<their-username>`.
 3. Leave `status=open` (they can claim it when ready) or set `status=claimed`.
-4. Save with summary `Bot: Assign to <User> — <agent>`.
+4. Save with summary `Bot: Assign to <User> - <agent>`.
 
 ---
 
@@ -132,10 +134,11 @@ parse-wikitext(wikitext="{{#cargo_query:tables=WikiTasks
 
 | Current → Target | Summary |
 |---|---|
-| `claimed` → `in-progress` | `Bot: Mark in-progress — <agent>` |
-| `in-progress` → `review` | `Bot: Submit for review — <agent>` |
-| `review` → `done` | `Bot: Mark done — <agent>` |
-| `review` → `in-progress` | `Bot: Return for changes — <agent>` |
+| `claimed` → `in-progress` | `Bot: Mark in-progress - <agent>` |
+| `in-progress` → `review` | `Bot: Submit for review - <agent>` |
+| `review` → `done` | `Bot: Mark done - <agent>` |
+| `review` → `in-progress` | `Bot: Return for changes - <agent>` |
+| any non-done → `cancelled` | `Bot: Cancel task - <agent>` (creator or admin only) |
 
 Always fetch the page first, change `status`, add any relevant updates to
 `description` or `== Notes ==`, then save with the revision ID for conflict
@@ -167,17 +170,20 @@ formatted summary.
 
 ```
 {{#cargo_query:tables=WikiTasks|fields=_pageName,task_title,assignee,deadline,created_date
-|where=status!='done' AND assignee!='' AND created_date < '2026-06-01'
+|where=status!='done' AND status!='cancelled' AND assignee!='' AND created_date < '<TODAY minus 30 days>'
 |format=table}}
 ```
 — potentially stale (no recent activity)
 
 ```
 {{#cargo_query:tables=WikiTasks|fields=_pageName,task_title,assignee,deadline
-|where=deadline < '2026-06-19' AND status!='done'
+|where=deadline < '<TODAY>' AND status!='done' AND status!='cancelled'
 |format=table}}
 ```
 — overdue tasks
+
+For a full automated hygiene pass (stale claims, duplicates, malformed
+fields), use the `board-janitor` skill.
 
 ---
 

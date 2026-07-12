@@ -43,11 +43,13 @@ empty or missing.
 - Preload format: `{{TemplateName\n| field = \n| field = \n}}` followed by
   commented instructions, then stub sections (`== About ==`, etc.).
 
-### Known issue (as of 2026-06)
+### Known recurring candidate
 
-`Template:FOSSCell Activity/preload` exists but is empty. Requires admin to fix.
-The correct content is the `{{FOSSCell Activity}}` template invocation with all
-fields blank, a comment block explaining each field, and stub sections.
+`Template:FOSSCell Activity/preload` has been found empty in past audits
+(requires admin to fix). Re-check it — and every other `/preload` page — on
+each run rather than assuming past state. The correct content is the
+`{{FOSSCell Activity}}` template invocation with all fields blank, a comment
+block explaining each field, and stub sections.
 
 ---
 
@@ -134,9 +136,11 @@ get-page("Multidisciplinary Centres")
 
 Fetch each preload target with `get-page`; if missing → create it.
 
-### Known state (2026-06)
+### Checking
 
-`Club/preload` and `Centre/preload` exist and are correct.
+Do not assume past audit state — fetch each preload target on every run
+(`Club/preload` and `Centre/preload` were correct in past audits but can
+change).
 
 ---
 
@@ -144,10 +148,17 @@ Fetch each preload target with `get-page`; if missing → create it.
 
 1. Run detection steps above - surface findings to human before fixing anything.
 2. For each fixable issue: fetch the relevant `Template:X`, fetch a sibling page,
-   draft the fix, show the human the diff, then apply.
+   draft the fix, preview with `parse-wikitext`, show the human the diff, then
+   apply with `latestId` conflict detection.
 3. For issues that require admin rights (Template namespace edits): produce the
    exact content and tell the human which page to edit.
 4. Log every change with summary `Bot: Fix <issue> - <agent>`.
+5. On write errors, follow `rules/agent-conventions.md` §3.
+
+> If the `cargo-*` tools error with "Wiki could not be reached to check for
+> the extension" while other tools work, the server cached a failed extension
+> probe (see `rules/agent-conventions.md` §6) — use `{{#cargo_query:}}` via
+> `parse-wikitext` and ask the operator to restart the MCP client.
 
 ## Authoritative references
 

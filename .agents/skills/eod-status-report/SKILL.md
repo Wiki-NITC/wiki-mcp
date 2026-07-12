@@ -5,36 +5,39 @@ description: Generate an end-of-day (EOD) status report cross-referencing the Wi
 
 # EOD Status Report
 
-Produces a comprehensive table mapping every member of the
-`WIKI FOSSCELL NITC:Wiki Admin Team/2026-27` against their task assignments,
-surfacing idle members, overdue items, and missing deadlines.
+Produces a comprehensive table mapping every member of the current
+`WIKI FOSSCELL NITC:Wiki Admin Team/<academic-year>` roster against their
+task assignments, surfacing idle members, overdue items, and missing
+deadlines.
 
 ---
 
 ## Data sources
 
-1. **Team roster** — `WIKI FOSSCELL NITC:Wiki Admin Team/2026-27` page
-   (`get-page`) parses the `{{Wiki Admin Team}}` template for usernames and
-   team labels.
+1. **Team roster** — the current academic year's
+   `WIKI FOSSCELL NITC:Wiki Admin Team/<year>` page. Discover it — never
+   hardcode the year (see `rules/agent-conventions.md` §5).
 2. **Task board** — `WikiTasks` Cargo table via `{{#cargo_query:}}` through
-   `parse-wikitext`.
+   `parse-wikitext` (technique: `rules/structured-data.md` § Querying Cargo).
 
 ---
 
 ## Step-by-step
 
-### 1. Fetch the team roster
+### 1. Find and fetch the current team roster
 
 ```
-get-page("WIKI FOSSCELL NITC:Wiki Admin Team/2026-27")
+search-page-by-prefix(prefix="Wiki Admin Team/", namespace=4)
 ```
 
-Extract each `<tr>` row from the `|members=` value:
+Pick the latest academic year from the results, then `get-page` it. Extract
+each `<tr>` row from the `|members=` value:
 
 - **Username** — wikilink target (`[[User:...]]`) or plain text.
 - **Team** — column 2 (MCP, Templates, App, PRC, Social Media, Video, or —).
-- Normalise username casing (task board uses differing casing e.g. `C3tm`
-  vs `c3tm`, `H_R_Soorya_Dev` vs `H_R_Soorya_Dev`). Match case-insensitively.
+- Normalise username casing (the task board uses differing casing, e.g.
+  `C3tm` vs `c3tm`, or `H_R_Soorya_Dev` vs `h_r_soorya_dev`; spaces and
+  underscores are interchangeable). Match case-insensitively.
 
 ### 2. Fetch active (non-done, non-cancelled) tasks
 
@@ -82,7 +85,7 @@ Include a summary line at the end:
 ```
 | # | Member | Team | Task(s) | Status | Priority | Deadline |
 |---|---|---|---|---|---|---|
-| 1 | Vysakh | Lead | Induct Core Admin Team | done | medium | 2024-05-23 |
+| 1 | Vysakh | Lead | Induct Core Admin Team | in-progress | medium | <date> |
 | 2 | ... | ... | ... | ... | ... | ... |
 | N | Benjamin | MCP | — | **idle** | — | — |
 

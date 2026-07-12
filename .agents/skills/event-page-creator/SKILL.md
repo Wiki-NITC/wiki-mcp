@@ -174,10 +174,20 @@ Verify all three exist with `search-page` before using.
    `get-page("YYYY-1:EventName")`.
 3. Read the relevant `Template:Infobox X` for current field names.
 4. Draft the main page wikitext (skeleton above, filled in).
-5. Show the human the proposed page and confirm before saving.
-6. `create-page` with summary `Bot: Create 2026:EventName - <agent>`.
-7. Create the main-namespace redirect(s).
-8. Scaffold subpages if requested (one `create-page` call each).
+5. **Preview with `parse-wikitext`** — verify the infobox and Event template
+   render without errors (`rules/agent-conventions.md` §2).
+6. Show the human the proposed page and confirm before saving.
+7. `create-page` with summary `Bot: Create YYYY:EventName - <agent>`.
+8. Create the main-namespace redirect(s).
+9. Scaffold subpages if requested (one `create-page` call each).
+
+**On write errors** (conflict, permission, auth): follow
+`rules/agent-conventions.md` §3. If editing an existing event page instead of
+creating, fetch with `metadata=true` and pass `latestId` on `update-page`.
+
+> The `== Highlights ==` / `== Sub Committees ==` headings are this page
+> family's established structure — keep them as-is (see `rules/editing.md` §1,
+> established-family exception).
 
 ---
 
