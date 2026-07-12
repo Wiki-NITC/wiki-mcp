@@ -269,6 +269,8 @@ or "by Friday"), populate the `|deadline=` field. Otherwise leave it empty.
 | PRC | `prc` |
 | Social Media | `social-media` |
 | Video | `video-editors` |
+| Design | `design` |
+| Policy | `policy` |
 
 If the member is not found in the team roster, leave `category` empty.
 

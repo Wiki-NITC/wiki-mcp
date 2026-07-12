@@ -193,12 +193,17 @@ When creating or querying tasks, use these team categories to route work:
 
 | Category | Team |
 |---|---|---|
-| `template-admins` | Template Administrators |
+| `template-admins` | Template Administrators (incl. content/data quality) |
 | `app-dev` | Application Developers |
-| `prc` | Public Relations Committee |
+| `prc` | Public Relations Committee (incl. outreach) |
 | `social-media` | Social Media team |
 | `video-editors` | Video Editing team |
-| `mcp-admins` | MCP Server Administrators |
+| `mcp-admins` | MCP Server Administrators (incl. infra) |
+| `design` | Design team (brandbook, visual identity) |
+| `policy` | Policy and Delegations |
+
+Only these values — no invented variants, and no spaces after commas in
+multi-category lists (see `rules/task-board.md` §4).
 
 Query unclaimed tasks for a team:
 `category HOLDS 'template-admins' AND assignee=''`

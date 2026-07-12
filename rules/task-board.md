@@ -63,16 +63,24 @@ comma-separated: `|category=template-admins,mcp-admins`.
 
 | Category | Team |
 |---|---|---|
-| `template-admins` | Template Administrators |
+| `template-admins` | Template Administrators (incl. content/data quality work) |
 | `app-dev` | Application Developers |
-| `prc` | Public Relations Committee |
+| `prc` | Public Relations Committee (incl. outreach) |
 | `social-media` | Social Media team |
 | `video-editors` | Video Editing team |
-| `mcp-admins` | MCP Server Administrators |
+| `mcp-admins` | MCP Server Administrators (incl. server/infra work) |
+| `design` | Design team (brandbook, visual identity) |
+| `policy` | Policy and Delegations (policies, conventions docs) |
 
 These categories are for **task routing** — they let team leads query
 unassigned tasks in their domain. They are not user roles; user roles are
 tracked via categories on User pages (see §6).
+
+Only these values are valid. Do not invent variants (`templates`, `infra`,
+`content`, `brand`, `outreach`, `documentation`, and `Policy_team` have all
+appeared on the board and had to be normalized away — the parenthetical
+notes above show where each maps). No spaces after commas in
+multi-category lists (`a,b`, not `a, b` — the space breaks `HOLDS` queries).
 
 ---
 

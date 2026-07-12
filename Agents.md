@@ -194,7 +194,39 @@ The human operator should be able to open each `draftpage-*.html` in a browser a
 
 ---
 
-## 10. Enforcement
+## 10. Use the skills — do not improvise known workflows
+
+This repo ships task-specific skills under `.agents/skills/`. **Before doing
+any of the tasks below, load and follow the matching skill** — improvised
+versions get conventions wrong (real example: meeting minutes created at a
+free-form title instead of `WIKI FOSSCELL NITC:Meetings/YYYY-MM-DD` because
+the skill wasn't loaded; the page had to be moved).
+
+| Task | Skill |
+|---|---|
+| Any read/edit on this wiki (start here) | `nitc-wiki-editing` |
+| Meeting transcript → minutes + tasks | `meeting-processor` |
+| Task board: find/claim/create/update tasks | `wiki-task-board` |
+| Task board cleanup / health report | `board-janitor` |
+| Event or fest edition pages | `event-page-creator` |
+| Home team pages | `nitc-wiki-home-teams` |
+| Magazine entries or MagCom archiving | `magazine-submission` |
+| New contributor onboarding | `first-contribution` |
+| Fee/bus PDF ingestion | `hostel-fee-ingest` / `institute-fee-ingest` / `bus-timings-ingest` |
+| New (non-Cargo) templates | `template-creator` |
+| Cargo data audits | `cargo-auditor` |
+| Structural health checks | `wiki-diagnostics` |
+| Uncategorized/orphan page sweeps | `wiki-gardener` |
+| Recent-changes patrol | `recent-changes-patroller` |
+| Weekly standup update for a member | `weekly-update-reporter` |
+| Repo docs vs live wiki drift check | `rules-drift-auditor` |
+
+If your client does not auto-load skills, read the relevant
+`.agents/skills/<name>/SKILL.md` file before starting the task.
+
+---
+
+## 11. Enforcement
 
 - Every agent integration in the Wiki-NITC organisation **must** load this document, [`rules/agent-conventions.md`](rules/agent-conventions.md), and the topic rules in `rules/` — and follow them.
 - If an agent's setup contradicts any rule here, this document takes precedence.
