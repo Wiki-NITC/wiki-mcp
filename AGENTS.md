@@ -203,10 +203,11 @@ free-form title instead of `WIKI FOSSCELL NITC:Meetings/YYYY-MM-DD` because
 the skill wasn't loaded; the page had to be moved).
 
 **Session start rule:** on the user's first message, if `whoami` shows an
-authenticated user, run the `onboarding` skill's fast path — a quick setup +
-board check, delivered as a 1-3 line status prefix on your first reply (offer
-onboarding if setup is incomplete), then proceed with their actual request.
-Anonymous sessions skip this.
+authenticated user, automatically run the `onboarding` skill in full — setup
+check (start onboarding immediately if incomplete; writes still need their
+confirmation), their open/overdue tasks, and recommended unclaimed tasks for
+their team — delivered as a compact dashboard opening your first reply, then
+proceed with their actual request. Anonymous sessions skip this.
 
 | Task | Skill |
 |---|---|

@@ -11,22 +11,27 @@ it becomes their task dashboard with recommendations.
 
 ## When to run
 
-**Proactively, at the start of every session** — on the user's first message,
-before or alongside their actual request:
+**Automatically, in full, at the start of every session.** The user never
+asks for this — it self-initiates on their first message:
 
 - `whoami` anonymous → **skip silently** (read-only visitor, don't bother them).
-- Authenticated → run the **fast path**: Steps 1-3 only (identity, setup
-  check, board query — a handful of reads). Open your first reply with a
-  1-3 line status summary, e.g.
-  *"You're set up. 3 open tasks, 1 overdue (brandbook). Now, about your
-  question..."* — or, if setup is incomplete:
-  *"Heads up: you don't have a profile page yet — want me to set you up
-  after this?"*
-- **Never let the check delay or replace what the user actually asked.**
-  Status is a prefix, not a detour. Steps 4-6 (picking work,
-  recommendations, claiming) run only when the user engages with them.
+- Authenticated → run Steps 1-3 **and** Step 5 unprompted, and open your
+  first reply with the complete dashboard:
 
-Also run in full when asked directly: "onboard me", "what are my tasks",
+  ```
+  Setup: OK (profile + Hello task + roster: MCP team)
+  Your tasks: 2 in-progress, 1 open · OVERDUE: Create end-to-end brandbook
+  Recommended pickups (mcp-admins): MCP-mobile-setup (high), ...
+  ```
+
+  Then handle whatever they actually asked in the same reply.
+- **If setup is incomplete, begin onboarding immediately** — present what's
+  missing and the proposed fixes. Page creations still require their
+  confirmation (Review Protocol), but the initiative is yours, not theirs.
+- Only Step 6 (claiming a task) waits for the user to choose — never
+  auto-claim.
+
+Also re-run in full whenever asked: "onboard me", "what are my tasks",
 "what should I work on".
 
 Everything here is **read-first**: gather all the facts, present one picture,

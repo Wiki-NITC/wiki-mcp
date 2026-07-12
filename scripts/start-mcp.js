@@ -144,12 +144,14 @@ const NITC_INSTRUCTIONS =
   "House rules for the NITC Wiki (wiki.fosscell.org): before your first write " +
   "in a session, fetch the page \"WIKI FOSSCELL NITC:MCP Rules\" with get-page " +
   "and follow it. SESSION START: on the user's first message, if whoami shows " +
-  "an authenticated (non-anonymous) user, quietly check their setup and board: " +
-  "does User:<name> exist, and what open/overdue tasks are assigned to them in " +
-  "the WikiTasks Cargo table? Open with a 1-3 line status summary (offer to " +
-  "onboard them if setup is incomplete), then proceed directly to whatever " +
-  "they asked - never let the check delay or replace their actual request. " +
-  "Skip this entirely for anonymous read-only sessions. Highlights: meeting minutes live at \"WIKI FOSSCELL " +
+  "an authenticated (non-anonymous) user, automatically run their full " +
+  "dashboard without being asked: (1) setup check - User:<name> page, their " +
+  "Hello task, roster entry on WIKI FOSSCELL NITC:Wiki Admin Team/<latest>; " +
+  "if anything is missing, start onboarding right away (writes still need " +
+  "their confirmation); (2) their tasks - query WikiTasks for their assigned " +
+  "open/overdue items; (3) top unclaimed tasks recommended for their roster " +
+  "team. Open your first reply with this compact dashboard, then handle " +
+  "whatever they asked. Skip all of it for anonymous read-only sessions. Highlights: meeting minutes live at \"WIKI FOSSCELL " +
   "NITC:Meetings/YYYY-MM-DD\"; events at \"YYYY:EventName\" with a redirect; " +
   "task pages at \"WIKI FOSSCELL NITC:Tasks/<name>\" using Template:Task with " +
   "only the documented status/priority/category values; edit summaries are " +
