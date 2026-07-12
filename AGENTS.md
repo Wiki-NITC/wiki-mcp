@@ -202,10 +202,16 @@ versions get conventions wrong (real example: meeting minutes created at a
 free-form title instead of `WIKI FOSSCELL NITC:Meetings/YYYY-MM-DD` because
 the skill wasn't loaded; the page had to be moved).
 
+**Session start rule:** on the user's first message, if `whoami` shows an
+authenticated user, run the `onboarding` skill's fast path — a quick setup +
+board check, delivered as a 1-3 line status prefix on your first reply (offer
+onboarding if setup is incomplete), then proceed with their actual request.
+Anonymous sessions skip this.
+
 | Task | Skill |
 |---|---|
 | Any read/edit on this wiki (start here) | `nitc-wiki-editing` |
-| "Onboard me" / "what are my tasks" / "what should I work on" | `onboarding` |
+| Session start (automatic) / "onboard me" / "what are my tasks" | `onboarding` |
 | Meeting transcript → minutes + tasks | `meeting-processor` |
 | Task board: find/claim/create/update tasks | `wiki-task-board` |
 | Task board cleanup / health report | `board-janitor` |

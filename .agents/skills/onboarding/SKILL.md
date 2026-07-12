@@ -1,6 +1,6 @@
 ---
 name: onboarding
-description: "Personal onboarding and work dashboard for NITC Wiki team members. Checks whether the current user is fully onboarded (profile page, Hello task, roster entry), fixes the gaps, then shows their open tasks and overdue items and recommends unclaimed tasks matched to their team from the Wiki Admin Team roster. Use when someone says onboard me, asks what their tasks are, what they should work on next, or wants to get started as a member."
+description: "Personal onboarding and work dashboard for NITC Wiki team members. Runs PROACTIVELY at the start of every session for authenticated users: checks whether they are fully onboarded (profile page, Hello task, roster entry), offers to fix gaps, and opens with a short status of their open and overdue tasks before assisting with their actual request. Also triggers on demand: onboard me, what are my tasks, what should I work on next."
 ---
 
 # Onboarding & Personal Dashboard
@@ -8,6 +8,26 @@ description: "Personal onboarding and work dashboard for NITC Wiki team members.
 One skill for "get me set up" and "what's on my plate". Run it for a brand-new
 member and it walks them through onboarding; run it for an existing member and
 it becomes their task dashboard with recommendations.
+
+## When to run
+
+**Proactively, at the start of every session** — on the user's first message,
+before or alongside their actual request:
+
+- `whoami` anonymous → **skip silently** (read-only visitor, don't bother them).
+- Authenticated → run the **fast path**: Steps 1-3 only (identity, setup
+  check, board query — a handful of reads). Open your first reply with a
+  1-3 line status summary, e.g.
+  *"You're set up. 3 open tasks, 1 overdue (brandbook). Now, about your
+  question..."* — or, if setup is incomplete:
+  *"Heads up: you don't have a profile page yet — want me to set you up
+  after this?"*
+- **Never let the check delay or replace what the user actually asked.**
+  Status is a prefix, not a detour. Steps 4-6 (picking work,
+  recommendations, claiming) run only when the user engages with them.
+
+Also run in full when asked directly: "onboard me", "what are my tasks",
+"what should I work on".
 
 Everything here is **read-first**: gather all the facts, present one picture,
 then act only on what the human approves.
