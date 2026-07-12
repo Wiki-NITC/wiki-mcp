@@ -4,11 +4,12 @@
     "wiki.fosscell.org": {
       "sitename": "WIKI FOSSCELL NITC",
       "server": "https://wiki.fosscell.org",
-      "articlepath": "",
+      "articlepath": "/",
       "scriptpath": "",
       "username": "your-bot-username",
       "password": "your-bot-password",
-      "private": false
+      "private": false,
+      "readOnly": false
     }
   }
 }

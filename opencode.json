@@ -3,7 +3,7 @@
   "mcp": {
     "wiki.fosscell.org": {
       "type": "local",
-      "command": ["bash", "scripts/start-mcp.sh"],
+      "command": ["node", "scripts/start-mcp.js"],
       "enabled": true
     }
   }

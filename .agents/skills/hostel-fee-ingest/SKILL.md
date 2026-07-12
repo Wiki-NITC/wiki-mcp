@@ -136,11 +136,15 @@ Always add:
 
 ### Template:Hostel Fee Structure
 
-This template already exists on the wiki. Check its current field list with:
+Verify it exists and check its current field list with:
 
 ```
 get-page("Template:Hostel Fee Structure")
 ```
+
+If it is ever missing, do not create it — it declares a Cargo table, which
+agents never create (`rules/agent-conventions.md` §7). Hand the request to a
+wiki admin.
 
 Parameters:
 
@@ -169,6 +173,11 @@ Parameters:
 - [ ] Values match the PDF exactly (verify each line item)
 - [ ] SC/ST and General totals are in the correct fields
 - [ ] Notes from the original notification preserved
+- [ ] Target page checked for existence first (`get-page`) — use
+      `update-page` with `latestId` if it already exists
+- [ ] Rendered once through `parse-wikitext` before saving
 - [ ] Page is in main namespace, not Project namespace
 - [ ] Two categories: `Fee Structures` and `Hostels`
 - [ ] Human confirms before saving
+
+**On write errors**: follow `rules/agent-conventions.md` §3.

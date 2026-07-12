@@ -53,19 +53,45 @@ To list data, use a Cargo query rather than maintaining a manual list:
 }}
 ```
 
-If you have the MCP Cargo tools available, you can also explore tables directly:
-`cargo-list-tables`, `cargo-describe-table`, `cargo-query`.
+### The canonical agent query technique: `{{#cargo_query:}}` via `parse-wikitext`
+
+The direct Cargo API tools (`cargo-list-tables`, `cargo-describe-table`,
+`cargo-query`) can be **permission-restricted for regular accounts**, and they
+can also get stuck after a network outage (the server caches a failed extension
+probe — see `rules/agent-conventions.md` §6). The reliable path that works with
+page-render permissions is running the query through `parse-wikitext`:
+
+```
+parse-wikitext(wikitext="{{#cargo_query:tables=WikiTasks
+|fields=_pageName,task_title,status,priority
+|where=status='open'
+|order by=priority
+|format=table
+|limit=100}}")
+```
+
+Notes that apply to every Cargo query on this wiki:
+
+- Use `HOLDS` / `HOLDS LIKE` for list-type fields, `LIKE '%kw%'` for substring
+  matches.
+- Cargo collapses NULL to empty string: `field=''` matches unset AND empty.
+- Results are HTML — parse the table/list out of the response.
+- Use `cargo-list-tables` (when available) to discover live table names rather
+  than relying on any hardcoded list; tables change as templates evolve.
 
 ---
 
 ## Page Forms (preferred way to create structured pages)
 
-The wiki defines **Forms** that generate correctly-structured pages. Existing
-forms include: `Form:Organization`, `Form:Event`, `Form:FOSSMeet`, `Form:Course`,
-`Form:Faculty`, `Form:Person`, `Form:Centre`, `Form:Hostel`, `Form:Home Team`,
-`Form:Home Team Year`, `Form:Campus Location`, `Form:SAC Meeting`,
+The wiki defines **Forms** that generate correctly-structured pages. Discover
+the current set with `search-page-by-prefix(prefix="", namespace=106)`. Live
+forms include: `Form:Organization`, `Form:Organization Activity`,
+`Form:Organization Year Report`, `Form:Event`, `Form:FOSSMeet`, `Form:Course`,
+`Form:Faculty`, `Form:Person`, `Form:Centre`, `Form:Hostel`,
+`Form:Hostel Fee Structure`, `Form:Home Team`, `Form:Home Team Year`,
+`Form:Campus Location`, `Form:SAC Meeting`, `Form:App Meeting`,
 `Form:CCD Year Report`, `Form:Centre Year Report`, `Form:Artwork Submission`,
-`Form:Magazine Submission`.
+`Form:Magazine Submission`, `Form:Handbook`.
 
 For agents:
 

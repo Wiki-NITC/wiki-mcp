@@ -142,13 +142,14 @@ Always add:
 
 ## Wiki template setup
 
-If `Template:Institute Fee Structure` does not yet exist, create it on the wiki.
+Verify `Template:Institute Fee Structure` exists before writing any fee data:
+`get-page("Template:Institute Fee Structure")`.
 
-### 1. Recommended: Use the template-creator skill
-Load the `template-creator` skill and ask it to create `Template:Institute Fee Structure` — it will generate the template, cargo table, form, preload, and helper page automatically.
-
-### 2. Fallback: Manual creation
-If template-creator is not available, paste the following at `https://wiki.fosscell.org/Template:Institute_Fee_Structure?action=edit`:
+If it does not exist: **do not create it yourself, and do not route it through
+the template-creator skill** — it declares a Cargo table (`{{#cargo_declare}}`),
+which agents never create (`rules/agent-conventions.md` §7; template-creator
+refuses Cargo templates by design). Instead, hand the exact wikitext below to
+a wiki admin and stop until it exists:
 
 ```wikitext
 <noinclude>{{#cargo_declare:_table=InstituteFees
@@ -210,7 +211,7 @@ Stores institute fee items into the InstituteFees Cargo table.
 </noinclude>
 ```
 
-Also create `Template:Institute Fee Structure/preload` with:
+The admin should also create `Template:Institute Fee Structure/preload` with:
 
 ```wikitext
 {{Institute Fee Structure
@@ -225,7 +226,8 @@ Also create `Template:Institute Fee Structure/preload` with:
 }}
 ```
 
-And `Form:Institute Fee Structure` using the same pattern as `Form:Hostel Fee Structure`.
+And `Form:Institute Fee Structure` using the same pattern as
+`Form:Hostel Fee Structure` (verify that form still exists with `get-page`).
 
 ---
 
@@ -236,5 +238,10 @@ And `Form:Institute Fee Structure` using the same pattern as `Form:Hostel Fee St
 - [ ] Amounts match the PDF exactly
 - [ ] `applicable_to` clearly states who the fee applies to
 - [ ] Page is in main namespace
+- [ ] Target page checked for existence first (`get-page`) — use
+      `update-page` with `latestId` if it already exists
+- [ ] Rendered once through `parse-wikitext` before saving
 - [ ] Categories: `Fee Structures` and `Academic`
 - [ ] Human confirms before saving
+
+**On write errors**: follow `rules/agent-conventions.md` §3.

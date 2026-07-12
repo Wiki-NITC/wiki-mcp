@@ -9,7 +9,8 @@ MCP-compatible AI client (opencode, Claude Desktop, Cursor, and others).
 
 Under the hood this is a thin, pinned wrapper around the
 [`@professional-wiki/mediawiki-mcp-server`](https://github.com/ProfessionalWiki/MediaWiki-MCP-Server)
-(v0.10.0) plus NITC-specific config and house rules. We don't reinvent the server —
+(the exact version is pinned in [`scripts/start-mcp.js`](scripts/start-mcp.js))
+plus NITC-specific config and house rules. We don't reinvent the server —
 we point it at our wiki and add guardrails.
 
 ---
@@ -27,11 +28,14 @@ password (see [Editing the wiki](#editing-the-wiki)).
 ## Setup
 
 Download this folder (green **Code** button → **Download ZIP**, or `git clone`),
-then point your client at it.
+then point your client at it. The launcher is a Node script, so **the same
+setup works on Windows, macOS, and Linux**.
 
-> Tip: the included script auto-creates a `config.json` on first run, so reading
-> works immediately. Run `bash scripts/validate-config.sh` any time to confirm the
-> wiki is reachable.
+> Tip: the launcher auto-creates a `config.json` on first launch, so reading
+> works immediately. After that first launch (or after copying
+> `config.example.json` to `config.json`), run `bash scripts/validate-config.sh`
+> (Windows: `powershell -File scripts\validate-config.ps1`) any time to confirm
+> the wiki is reachable and your credentials have the rights editing needs.
 
 ### opencode
 
@@ -49,15 +53,16 @@ Windows: `%APPDATA%\Claude\claude_desktop_config.json`) and add:
 {
   "mcpServers": {
     "wiki.fosscell.org": {
-      "command": "bash",
-      "args": ["/ABSOLUTE/PATH/TO/wiki-mcp/scripts/start-mcp.sh"]
+      "command": "node",
+      "args": ["/ABSOLUTE/PATH/TO/wiki-mcp/scripts/start-mcp.js"]
     }
   }
 }
 ```
 
-Replace `/ABSOLUTE/PATH/TO/wiki-mcp` with the real path (run `pwd` inside the folder
-to get it), then restart Claude Desktop.
+Replace `/ABSOLUTE/PATH/TO/wiki-mcp` with the real path (on Windows use
+double backslashes, e.g. `C:\\Users\\you\\wiki-mcp\\scripts\\start-mcp.js`),
+then restart the client fully.
 
 ### Cursor
 
@@ -73,15 +78,25 @@ Reading works out of the box. To **create or edit pages**:
 1. Create a bot password at
    [`Special:BotPasswords`](https://wiki.fosscell.org/Special:BotPasswords) (ask the
    FOSS Cell team if you need an account).
-2. Open `config.json` (created automatically on first run) and fill in `username`
-   and `password`.
+2. Copy `.env.example` to `.env` and fill in `BOT_USERNAME` and `BOT_PASSWORD`.
+   The launcher reads `.env` and writes the credentials into `config.json` on
+   every start. **`.env` wins**: if you also hand-edit credentials in
+   `config.json`, the `.env` values overwrite them on the next launch (the
+   launcher prints a notice when that happens). To manage credentials in
+   `config.json` directly instead, just don't set them in `.env`.
 3. Restart your client.
 
-> **File uploads are off in this beta.** Agents can create and edit text pages but
-> cannot upload files yet. This is intentional and will be enabled later.
+Rotating the bot password later (e.g. after regenerating it in
+`Special:BotPasswords`) only needs step 2 and 3 repeated — edit `.env`, restart
+your client. See [docs/rotating-credentials.md](docs/rotating-credentials.md)
+for why a restart is required and the full rotation runbook.
 
-**Never commit `config.json`** — it holds your credentials and is already in
-`.gitignore`.
+> **File uploads are off.** Agents can create and edit text pages but cannot
+> upload files yet. This is intentional and will be enabled later — policy in
+> [`rules/uploads.md`](rules/uploads.md).
+
+**Never commit `config.json` or `.env`** — they hold your credentials and are
+already in `.gitignore`.
 
 ---
 
@@ -90,9 +105,11 @@ Reading works out of the box. To **create or edit pages**:
 | Symptom | Fix |
 |---|---|
 | `Node.js is required` | Install Node 22.12+ from [nodejs.org](https://nodejs.org). |
-| Client shows no wiki tools | Confirm the path in your client config is absolute and points to `scripts/start-mcp.sh`. Restart the client fully. |
-| "API not reachable" | Run `bash scripts/validate-config.sh`. Check your internet connection and that `https://wiki.fosscell.org` loads. |
-| Edits rejected / "permission denied" | Add a valid bot password to `config.json` and restart. |
+| Client shows no wiki tools | Confirm the path in your client config is absolute and points to `scripts/start-mcp.js` (command: `node`). Restart the client fully. |
+| "API not reachable" | Run the validator. Check your internet connection and that `https://wiki.fosscell.org` loads. |
+| Every request times out silently, but the wiki loads on mobile data | Your IP may be filtered at the wiki's reverse proxy — contact a wiki admin about allowlisting. |
+| Cargo/SMW tools fail with "Wiki could not be reached to check for the extension" while other tools work | The server cached a failed extension probe after a network blip. Fully restart your client. Queries still work via `parse-wikitext` meanwhile. |
+| Edits rejected / "permission denied" | Add a valid bot password via `.env` and restart. The validator's Step 5 tells you exactly which rights the account is missing. |
 | First run is slow | `npx` downloads the server once, then caches it. |
 
 ---
@@ -102,18 +119,22 @@ Reading works out of the box. To **create or edit pages**:
 Every agent acting on the wiki should follow [`Agents.md`](Agents.md) and the
 detailed guides in [`rules/`](rules/):
 
+- [`rules/agent-conventions.md`](rules/agent-conventions.md) — edit summaries, error handling, preview discipline
 - [`rules/namespaces.md`](rules/namespaces.md) — namespaces + naming conventions
 - [`rules/structured-data.md`](rules/structured-data.md) — Cargo / SMW / Page Forms
 - [`rules/page-types.md`](rules/page-types.md) — recipe per page type
-- [`rules/categories.md`](rules/categories.md), [`rules/templates.md`](rules/templates.md), [`rules/editing.md`](rules/editing.md)
+- [`rules/categories.md`](rules/categories.md), [`rules/templates.md`](rules/templates.md), [`rules/editing.md`](rules/editing.md), [`rules/task-board.md`](rules/task-board.md), [`rules/uploads.md`](rules/uploads.md)
 
 These are verified against the live wiki. Most are **guidance the AI is asked to
 follow**, not limits the server hardware-enforces — see the top of `Agents.md` for
 what's actually enforced.
 
-A loadable **skill** at [`.agents/skills/nitc-wiki-editing/`](.agents/skills/nitc-wiki-editing/SKILL.md)
-packages the essentials so any skill-aware agent picks up these conventions
-automatically.
+Loadable **skills** under [`.agents/skills/`](.agents/skills/) package the
+conventions and common workflows (editing, task board, board hygiene, event
+pages, magazine, ingest pipelines, patrols, weekly updates, drift audits) so
+any skill-aware agent picks them up automatically —
+[`nitc-wiki-editing`](.agents/skills/nitc-wiki-editing/SKILL.md) is the
+starting point.
 
 ---
 

@@ -99,13 +99,14 @@ Always add at least:
 
 ## Wiki template setup
 
-If `Template:Bus Route` does not yet exist, create it on the wiki.
+Verify `Template:Bus Route` exists before writing any route data:
+`get-page("Template:Bus Route")`.
 
-### 1. Recommended: Use the template-creator skill
-Load the `template-creator` skill and ask it to create `Template:Bus Route` — it will generate the template, cargo table, form, preload, and helper page automatically.
-
-### 2. Fallback: Manual creation
-If template-creator is not available, paste the following wikitext at `https://wiki.fosscell.org/Template:Bus_Route?action=edit`:
+If it does not exist: **do not create it yourself, and do not route it through
+the template-creator skill** — it declares a Cargo table (`{{#cargo_declare}}`),
+which agents never create (`rules/agent-conventions.md` §7; template-creator
+refuses Cargo templates by design). Instead, hand the exact wikitext below to
+a wiki admin and stop until it exists:
 
 ```wikitext
 <noinclude>{{#cargo_declare:_table=BusRoutes
@@ -204,15 +205,21 @@ Stores bus route data into the BusRoutes Cargo table.
 </noinclude>
 ```
 
-Also create `Template:Bus Route/preload` with a blank template call prefilled.
+The admin should also create `Template:Bus Route/preload` with a blank
+template call prefilled (wrapped per `rules/templates.md` § Preload templates).
 
 ---
 
 ## Quality checklist
 
 - [ ] PDF is from an official NITC source
+- [ ] Target page checked for existence first (`get-page`) — use
+      `update-page` with `latestId` if it already exists
 - [ ] Stops are ordered correctly in the `stops` field
 - [ ] Timings use a consistent format (e.g. `8:45 AM`)
 - [ ] Days of operation are explicit
+- [ ] Rendered once through `parse-wikitext` before saving
 - [ ] Page has `[[Category:Transport]]` and `[[Category:Bus Schedules]]`
 - [ ] Human operator confirms before saving
+
+**On write errors**: follow `rules/agent-conventions.md` §3.

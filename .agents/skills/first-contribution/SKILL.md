@@ -54,11 +54,15 @@ Field notes:
 - `batch` - cohort code such as `B23`.
 - `passing_out` - graduation year, plain integer.
 - `interests`, `clubs` - comma-separated.
-- `image` - leave blank; file uploads are restricted, do not attempt one.
+- `image` - leave blank; uploads are disabled (see `rules/uploads.md`), do
+  not attempt one.
 - `scrapbook` - `Yes` or `No`.
 
-Check whether `User:<username>` already exists with `get-page` first. If it
-exists, update rather than overwrite.
+Check whether `User:<username>` already exists with `get-page` first
+(`metadata=true`). If it exists, update rather than overwrite, passing
+`latestId`. On write errors (`permission_denied`, `authentication`, etc.),
+follow `rules/agent-conventions.md` §3 — a brand-new account frequently hits
+these, so report them clearly instead of retrying.
 
 ---
 

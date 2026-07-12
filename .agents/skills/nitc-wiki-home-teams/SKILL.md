@@ -140,6 +140,15 @@ The live column convention is **Name / Role / Branch**. Example for a drama team
 The `captain` param is **not** auto-inserted into the table when `members`
 is overridden — include the captain in the custom table if desired.
 
+### Participations table
+
+`participations` takes bare `<tr>` rows — the template wraps them in the
+`<table>` itself (columns: Event / Venue / Date / Result):
+
+```wikitext
+<tr><td>SlamDunk at NIT Surathkal</td><td>NIT Surathkal</td><td>14–16 March 2026</td><td>Runners Up</td></tr>
+```
+
 ### Tab navigation
 
 `{{Home Team Year Tabs}}` is called automatically by the template.
@@ -164,6 +173,16 @@ For technical home teams, use the `project` and `docs` params:
 | achievements   = Won second place at [[Ragam]] 2026.
 }}
 ```
+
+### Common mistakes
+
+- **Hyphen instead of en-dash in `year`** — the field uses `2025–26`
+  (en-dash `–`), not `2025-26`. A hyphen breaks consistency with every other
+  yearly page.
+- **Team name spelled differently from the main page title** — breaks the
+  template's auto-generated `== See also ==` link back to the main page.
+- **Adding `[[Category:Home Teams]]` manually** — the template adds it via
+  `<includeonly>`; a manual duplicate creates category noise.
 
 ---
 
@@ -201,8 +220,8 @@ For technical home teams, use the `project` and `docs` params:
 5. **Create at least one yearly sub-page** for the current batch:
    - Title: `YYYY:TeamName`
    - Content: `{{Home Team Year Report|team=|year=|batch=}}`
-6. **Show the proposed wikitext to the human** before saving
-   (per the Review Protocol in AGENTS.md).
+6. **Preview with `parse-wikitext`**, then **show the proposed wikitext to
+   the human** before saving (Review Protocol, `Agents.md` §8).
 
 ## Editing an existing home team page
 
@@ -212,5 +231,7 @@ For technical home teams, use the `project` and `docs` params:
    - Move existing achievements into batch-organized `== Achievements ==`.
    - Add `== Yearly Reports ==` with existing or placeholder yearly links.
    - Categories are auto-assigned by the template based on `type`.
-3. Always provide a clear edit summary:
-   `Bot: <action> — <agent-name>`
+3. Fetch with `metadata=true` and pass `latestId` on `update-page`
+   (edit-conflict detection; on errors see `rules/agent-conventions.md` §3).
+4. Always provide a clear edit summary:
+   `Bot: <action> - <agent-name>`

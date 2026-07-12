@@ -1,14 +1,18 @@
 ---
 name: magazine-submission
-description: Submit entries to the NITC Wiki Magazine (2026:Magazine). Covers single submissions and bulk/batch uploads, Template:Magazine Submission usage, disclaimer patterns for archived works, and fixing common pitfalls that cause entries to not appear.
+description: Submit or archive entries to the NITC Wiki Magazine (the current year's Magazine page). Covers single submissions, bulk/batch archiving of MagCom collections, Template:Magazine Submission usage, slug rules, disclaimer patterns for archived works, and fixing common pitfalls that cause entries to not appear.
 ---
 
 # Magazine Submission
 
-A skill for publishing content to the
-[NITC Wiki Magazine](https://wiki.fosscell.org/2026:Magazine) — a
-Cargo‑backed aggregator at `2026:Magazine` that auto‑lists pages tagged
-with the `Template:Magazine Submission` template.
+A skill for publishing content to the NITC Wiki Magazine — a Cargo‑backed
+aggregator at `<YYYY>:Magazine` (e.g. `2026:Magazine`; use the current
+year's page) that auto‑lists pages tagged with the
+`Template:Magazine Submission` template.
+
+This skill also covers **bulk archiving** of MagCom collections (it replaced
+the old magazine-archiver skill, whose plain-prose format never reached the
+Cargo table and used invalid type values).
 
 ---
 
@@ -63,8 +67,9 @@ clause is the #1 reason an entry silently doesn't appear.
 
 Use when submitting one piece of your own work.
 
-1. **Find the magazine page:** `get-page` on `2026:Magazine` to confirm
-   the Cargo query for your type. Currently the queries use:
+1. **Find the magazine page:** `get-page` on the current year's
+   `<YYYY>:Magazine` to confirm the Cargo query for your type. Currently
+   the queries use:
    - `Poetry`, `Fiction`, `Essay` — with `type="Poetry"` etc.
    - **`Comics`** — **not** `Comic`
    - `Art`, `Photography`, `Interview`, `Memoir`
@@ -93,9 +98,9 @@ Use when submitting one piece of your own work.
    ```
 
 6. **Save** with edit summary:
-   `Bot: Creating magazine entry "Title" — <agent-name>`
+   `Bot: Create magazine entry "Title" - <agent-name>`
 
-7. **Verify** on `2026:Magazine` — the entry card appears under the
+7. **Verify** on the magazine page — the entry card appears under the
    matching type section.
 
 ---
@@ -119,17 +124,66 @@ wiki-magazine/
 Each source file contains the raw creative content only (no template).
 The agent constructs the full wikitext programmatically.
 
+### Slug rules
+
+Page titles use a title-cased hyphenated slug derived from the entry title:
+
+1. Title-case each word (capitalise the first letter of every word).
+2. Replace spaces with hyphens.
+3. Remove or replace special characters: `'` → omit, `&` → `and`, `,` → omit.
+4. Keep it under ~50 characters; truncate at a word boundary if needed.
+
+Examples:
+- "Crap, I like the Girl Now" → `Crap-I-Like-The-Girl-Now`
+- "Marichittum Mazhayathu Nilkunnavar" → `Marichittum-Mazhayathu-Nilkunnavar`
+- "Who Does Art Belong To?" → `Who-Does-Art-Belong-To`
+
 ### Per‑entry creation steps
 
-1. Read the source file.
-2. Construct the full wikitext:
+1. `whoami` — confirm the editor username the pages will live under.
+2. Read the source file.
+3. Construct the full wikitext. **Every archived entry MUST start with
+   `{{Magazine Submission}}`** — a plain-prose page never reaches the
+   `MagazineSubmissions` Cargo table and will not appear on the magazine
+   page. The `type` must be one of the accepted values (note `Comics` not
+   `Comic`, `Art` not `Artwork`):
    - `{{Magazine Submission}}` template block
    - Optional: disclaimer box (see below)
    - Source content
    - `[[Category:Magazine]]`
-3. Call `create-page` with title
+4. `get-page` the target title first — if it exists, resolve the slug
+   collision (see pitfalls) instead of overwriting.
+5. Call `create-page` with title
    `User:YourName/Magazine/<Slugified-Title>`.
-4. Edit summary: `Bot: Creating magazine entry "Title" — <agent-name>`
+6. Edit summary: `Bot: Create magazine entry "Title" - <agent-name>`
+
+Never batch more than ~20 pages without pausing to confirm with the human
+that the format looks correct.
+
+### Formatting notes for archived content
+
+- **Poetry**: preserve line breaks with blank lines between stanzas (no `<br>`).
+- **Fiction / Essay / Memoir**: paragraph breaks as blank lines.
+- **Comics / Art**: describe the work in prose if the image can't be uploaded
+  (uploads are disabled — see `rules/uploads.md`); note `<!-- image pending upload -->`.
+- **Malayalam / non-Latin text**: paste UTF-8 directly; do not transliterate.
+
+### Index page (optional, after a bulk run)
+
+Create or update `User:<editor>/Magazine` listing all entries:
+
+```wikitext
+== Magazine Archive ==
+Submissions archived from MagCom.
+
+{| class="wikitable sortable"
+! Title !! Author !! Type !! Issue
+|-
+| [[User:<editor>/Magazine/<Slug>|<Title>]] || <Author> || <Type> || <Year>
+|}
+
+[[Category:Magazine]]
+```
 
 ### Disclaimer patterns
 
@@ -143,11 +197,14 @@ by someone else), add a visible box after the template.
 <strong>📦 Collected submission</strong> — This submission is from the
 Magazine Committee's (MagCom) collection of past unpublished works. It is
 <strong>not my own creation</strong>. All rights belong to the original
-author. Collected and submitted by: Vysakh Premkumar.
+author. Collected and submitted by: <collector's full name>.
 </div>
 ```
 
-#### Malayalam disclaimer (വൈശാഖ് — note the spelling)
+Replace `<collector's full name>` with the actual collector (the person
+running the archive), confirmed with them — do not guess.
+
+#### Malayalam disclaimer (verify name spelling with the collector)
 
 ```html
 <div style="padding: 0.8em 1em; border-radius: 8px; background: #fff3cd; border: 1px solid #ffc107; font-size: 0.9em; margin-bottom: 1.5em;">
@@ -155,12 +212,14 @@ author. Collected and submitted by: Vysakh Premkumar.
 മുൻവർഷങ്ങളിലെ പ്രസിദ്ധീകരിക്കപ്പെടാത്ത രചനകളുടെ ശേഖരത്തിൽ നിന്നുള്ളതാണ്.
 ഇത് <strong>എന്റെ സ്വന്തം സൃഷ്ടിയല്ല</strong>. എല്ലാ അവകാശങ്ങളും
 യഥാർത്ഥ രചയിതാവിന് നിക്ഷിപ്തമാണ്. ശേഖരിച്ച് സമർപ്പിച്ചത്:
-വൈശാഖ് പ്രേംകുമാർ.
+<collector's name in Malayalam>.
 </div>
 ```
 
-> **കുറിപ്പ്:** "വൈശാഖ്" ആണ് ശരിയായ പേര് — "വിശാഖ്" അല്ല.
-> Double‑check this spelling; it is the #1 copy‑paste error.
+> **Note:** Malayalam name spellings are the #1 copy‑paste error (a real
+> past case: വിശാഖ് written instead of the correct വൈശാഖ് — one character
+> different). Confirm the collector's Malayalam spelling with them and
+> double-check character by character before saving.
 
 #### Anonymous submitter
 
@@ -173,7 +232,7 @@ disclaimer:
 Magazine Committee's (MagCom) collection of past unpublished works. It is
 <strong>not my own creation</strong>. Submitted to me by an anonymous member
 whose identity cannot be disclosed. All rights belong to the original author.
-Collected and submitted by: Vysakh Premkumar.
+Collected and submitted by: <collector's full name>.
 </div>
 ```
 
@@ -192,10 +251,10 @@ The magazine page queries by exact type string. If you set
 `|type=Comic` but the Cargo query says `type="Comics"`, the entry
 is stored with `Comic` and never matched.
 
-**Fix:** Always check `2026:Magazine` source to see the exact
+**Fix:** Always check the current magazine page's source to see the exact
 `WHERE type="X"` for each section. Current types: `Poetry`,
-`Fiction`, `Essay`, `Photography`, `Art`, **`Comics`** (plural),
-`Interview`, `Memoir`.
+`Fiction`, `Essay`, `Photography`, **`Art`** (not `Artwork`),
+**`Comics`** (plural, not `Comic`), `Interview`, `Memoir`.
 
 ### 2. Slug collision (underscore = space)
 
@@ -208,22 +267,16 @@ vs `theerasure-suzanne`), suffix the conflicting one distinctly.
 
 ### 3. Malayalam name spelling
 
-The most common copy‑paste error in the Malayalam disclaimer is
-writing **വിശാഖ്** instead of **വൈശാഖ്**.
-
-**Diff:**
-- ❌ `വിശാഖ്` (vi-śākh)
-- ✅ `വൈശാഖ്` (vai-śākh)
-
-The first character is different: `വി` vs `വൈ`. Always verify before
-saving.
+Malayalam names in disclaimers are easy to mis-spell by one character
+(e.g. `വി` vs `വൈ` as the first glyph). Confirm the spelling with the
+person named and verify character by character before saving.
 
 ### 4. Entries not showing after creation
 
 Troubleshoot in this order:
 1. Is the template at the very **top** of the page? (Before any content
    or HTML divs.)
-2. Does `|type=` exactly match the Cargo query on `2026:Magazine`?
+2. Does `|type=` exactly match the Cargo query on the magazine page?
 3. Is `[[Category:Magazine]]` present?
 4. Does the page exist at the expected title? (Run `get-page`.)
 5. Check the `MagazineSubmissions` Cargo table directly via
@@ -236,8 +289,8 @@ the issue is the type → query mismatch (pitfall #1).
 
 ## Verification
 
-After creating or bulk‑submitting entries, verify on
-`2026:Magazine` that:
+After creating or bulk‑submitting entries, verify on the current year's
+magazine page that:
 
 - Each entry card appears under the correct type section heading.
 - The title, author, and language display correctly.

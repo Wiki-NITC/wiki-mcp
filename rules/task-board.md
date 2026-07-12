@@ -21,8 +21,12 @@ open → claimed → in-progress → review → done
 | `in-progress` | Work has started | Assignee, admin |
 | `review` | Work is complete, awaiting review | Assignee, admin |
 | `done` | Reviewed and accepted as complete | Reviewer, admin |
+| `cancelled` | Task abandoned/obsolete — kept for history | Creator, admin |
 
-A task can also be reopened (`done` → `open`) only by an admin.
+A task can also be reopened (`done` → `open`) only by an admin. `cancelled`
+sits outside the linear lifecycle: any non-`done` state may move to
+`cancelled` (creator or admin), and queries for active work should exclude
+both `done` and `cancelled`.
 
 ---
 
@@ -59,16 +63,28 @@ comma-separated: `|category=template-admins,mcp-admins`.
 
 | Category | Team |
 |---|---|---|
-| `template-admins` | Template Administrators |
+| `template-admins` | Template Administrators (incl. content/data quality work) |
 | `app-dev` | Application Developers |
-| `prc` | Public Relations Committee |
+| `prc` | Public Relations Committee (incl. outreach) |
 | `social-media` | Social Media team |
 | `video-editors` | Video Editing team |
-| `mcp-admins` | MCP Server Administrators |
+| `mcp-admins` | MCP Server Administrators (incl. server/infra work) |
+| `design` | Design team (brandbook, visual identity) |
+| `policy` | Policy and Delegations (policies, conventions docs) |
 
 These categories are for **task routing** — they let team leads query
 unassigned tasks in their domain. They are not user roles; user roles are
 tracked via categories on User pages (see §6).
+
+Only these values are valid. Do not invent variants (`templates`, `infra`,
+`content`, `brand`, `outreach`, `documentation`, and `Policy_team` have all
+appeared on the board and had to be normalized away — the parenthetical
+notes above show where each maps). No spaces after commas in
+multi-category lists (`a,b`, not `a, b` — the space breaks `HOLDS` queries).
+
+**Exception:** onboarding tasks (`Onboard <Name>`, `Hello <Name>`) carry
+**no** team category — leave `category` empty. Onboarding is people work,
+not team-queue work; the newcomer's team goes in the description.
 
 ---
 
@@ -88,21 +104,25 @@ Each task page contains exactly one `{{Task}}` call. Fields:
 | `category` | Yes | Comma-separated from §4 taxonomy |
 | `description` | Yes | Self-contained context for action |
 | `assignee` | No | Wiki username of the assignee |
-| `deadline` | No | ISO 8601 date (`2026-07-15`) |
-| `created` | Yes | ISO 8601 date of creation |
+| `deadline` | No | ISO 8601 date (`YYYY-MM-DD`) |
+| `created` | Yes | ISO 8601 date of creation — resolve today's date from your environment |
 
-Example:
+> **Template parameter vs Cargo field:** the template parameter is `created`,
+> but it stores to the Cargo field **`created_date`**. Page wikitext uses
+> `|created=`; `{{#cargo_query:}}` filters use `created_date`.
+
+Example (dates shown as placeholders — use real resolved dates):
 
 ```wikitext
 {{Task
 |title=Apply hostel infoboxes to 15+ pages
 |status=claimed
 |priority=medium
-|category=templates,template-admins
+|category=template-admins
 |assignee=SomeUser
-|deadline=2026-07-15
+|deadline=<TODAY+7>
 |description=The {{Infobox Hostel}} template exists. Apply it to all hostel pages.
-|created=2026-06-19
+|created=<TODAY>
 }}
 ```
 
@@ -153,8 +173,10 @@ assignees can edit their own tasks.
 
 ## 8. Deadline conventions
 
-- Format: `YYYY-MM-DD` (ISO 8601).
-- A past-deadline task that is not `done` or `in-progress` is **overdue**.
+- Format: `YYYY-MM-DD` (ISO 8601). Resolve "today" from your environment —
+  never copy dates from documentation examples (see `rules/agent-conventions.md` §4).
+- A past-deadline task that is not `done`, `cancelled`, or `in-progress` is
+  **overdue**.
 - Overdue tasks should be either updated with a new deadline or returned to
   `open` for someone else to pick up.
 - Agents should flag overdue tasks in health reports.
@@ -189,7 +211,7 @@ Agents should flag stale tasks in health reports. An admin may:
 
 ## 11. Prohibited actions
 
-- Deleting task pages (close via `status=done` so history is preserved).
+- Deleting task pages (close via `status=done` or `status=cancelled` so history is preserved).
 - Setting `assignee` to a username that does not exist on the wiki.
 - Setting `critical` priority without admin approval.
 - Editing task pages to blank content.
@@ -198,14 +220,17 @@ Agents should flag stale tasks in health reports. An admin may:
 
 ## 12. Edit summary conventions for tasks
 
+Format follows `rules/agent-conventions.md` §1 (plain ASCII hyphen):
+
 | Action | Summary |
 |---|---|
-| Create task | `Bot: Create task "<title>" — <agent>` |
-| Claim task | `Bot: Claim task — <agent>` |
-| Assign | `Bot: Assign to <User> — <agent>` |
-| Update status | `Bot: Mark <status> — <agent>` |
-| Update deadline | `Bot: Update deadline to <date> — <agent>` |
-| Reopen | `Bot: Reopen task — <agent>` |
+| Create task | `Bot: Create task "<title>" - <agent>` |
+| Claim task | `Bot: Claim task - <agent>` |
+| Assign | `Bot: Assign to <User> - <agent>` |
+| Update status | `Bot: Mark <status> - <agent>` |
+| Update deadline | `Bot: Update deadline to <date> - <agent>` |
+| Cancel task | `Bot: Cancel task - <agent>` |
+| Reopen | `Bot: Reopen task - <agent>` |
 
 ---
 
@@ -213,12 +238,14 @@ Agents should flag stale tasks in health reports. An admin may:
 
 A recurring health report should cover:
 
-1. **Counts by status** — open / claimed / in-progress / review / done
+1. **Counts by status** — open / claimed / in-progress / review / done / cancelled
 2. **Counts by priority** — critical / high / medium / low
 3. **Unassigned open tasks** — grouped by category
 4. **Stale tasks** — per §10 criteria
-5. **Overdue tasks** — past deadline, not done
+5. **Overdue tasks** — past deadline, not done or cancelled
 6. **Orphan tasks** — assigned to a user that does not exist
+
+The `board-janitor` skill (`.agents/skills/board-janitor`) automates this report.
 
 ---
 

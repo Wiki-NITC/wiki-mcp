@@ -45,10 +45,14 @@ accordingly or ask the human for clarification.
 ## Data sources
 
 1. **Transcript** -- provided by the user (the trigger).
-2. **Team roster** -- `WIKI FOSSCELL NITC:Wiki Admin Team/2026-27` page for
-   username -> team -> category mapping.
+2. **Team roster** -- the current academic year's
+   `WIKI FOSSCELL NITC:Wiki Admin Team/<year>` page for
+   username -> team -> category mapping. Discover the latest year with
+   `search-page-by-prefix(prefix="Wiki Admin Team/", namespace=4)` -- never
+   hardcode it (`rules/agent-conventions.md` sec. 5).
 3. **WikiTasks Cargo table** -- queried via `parse-wikitext` with
-   `{{#cargo_query:}}` for dedup checks.
+   `{{#cargo_query:}}` for dedup checks (technique:
+   `rules/structured-data.md` sec. Querying Cargo).
 4. **Template:Task** -- used as-is for creating task pages.
 
 ---
@@ -75,20 +79,14 @@ For each unique name found in Next steps and Details:
 2. If no direct match, try the last word of the name (e.g. "Thomas" for
    "Joshua Jacob Thomas").
 3. If still no match, try the first word as a `User:` page search.
-4. If ambiguous (multiple matches) or no match at all -> **ask the human**.
+4. Cross-check against the roster page from Data sources -- its member rows
+   link display names to `User:` pages, which resolves most nicknames and
+   handle-style usernames (e.g. a "Benjamin Mathew" in the transcript may be
+   `Benjammer` on the wiki).
+5. If ambiguous (multiple matches) or no match at all -> **ask the human**.
 
-**Known mapping (for reference -- fuzzy match should find these):**
-
-| Transcript name | Wiki username |
-|---|---|
-| Vysakh Premkumar | Vysakh |
-| H R SOORYA DEV | H_R_Soorya_Dev |
-| Ajay AB | Ajayab |
-| Fadil Hasan | Fadil |
-| BATHULA LOHITH | Lohith |
-| Benjamin Mathew | Benjammer |
-| Joshua Jacob Thomas / Josh | Jay_Jay_Tee |
-| Pridhul Sagar | Pridhul Sagar |
+Do not maintain or rely on a hardcoded name -> username table; people join
+and leave every year. The roster page is the live source.
 
 ### 3. Create the Meeting Minutes page
 
@@ -162,7 +160,7 @@ description for deadline cues and parse them relative to the meeting date:
 
 | Pattern | Example | Computed deadline |
 |---|---|---|
-| `by <date>` | "by 2026-06-25" or "by June 25" | That date |
+| `by <date>` | "by YYYY-MM-DD" or "by June 25" | That date |
 | `within <N> days` | "within 3 days" | Meeting date + N |
 | `within <N> weeks` | "within 2 weeks" | Meeting date + Nx7 |
 | `by <dayname>` | "by Friday", "by Monday" | Next occurrence of that day |
@@ -271,6 +269,8 @@ or "by Friday"), populate the `|deadline=` field. Otherwise leave it empty.
 | PRC | `prc` |
 | Social Media | `social-media` |
 | Video | `video-editors` |
+| Design | `design` |
+| Policy | `policy` |
 
 If the member is not found in the team roster, leave `category` empty.
 
@@ -302,7 +302,7 @@ skipped tasks:
 {| class="wikitable"
 ! Task !! Assignee !! Priority !! Status
 |-
-| [[WIKI FOSSCELL NITC:Tasks/Mtg-2026-06-21-Fix-Images|Fix image rendering]] || Vysakh || high || open
+| [[WIKI FOSSCELL NITC:Tasks/Mtg-<meeting-date>-Fix-Images|Fix image rendering]] || Vysakh || high || open
 |-
 | ''Already tracked by [[WIKI FOSSCELL NITC:Tasks/Some-task|existing task]]'' || -- || -- || --
 |}
@@ -341,11 +341,13 @@ Per `Agents.md sec. 8`, the skill must pause and surface to the human:
 
 ## Edit summaries
 
+Format follows `rules/agent-conventions.md` sec. 1:
+
 | Action | Summary |
 |---|---|
-| Create minutes page | `Bot: Add meeting minutes for YYYY-MM-DD -- meeting-processor` |
-| Create task page | `Bot: Create task from meeting YYYY-MM-DD -- meeting-processor` |
-| Update minutes with links | `Bot: Link action items on minutes -- meeting-processor` |
+| Create minutes page | `Bot: Add meeting minutes for YYYY-MM-DD - <agent>` |
+| Create task page | `Bot: Create task from meeting YYYY-MM-DD - <agent>` |
+| Update minutes with links | `Bot: Link action items on minutes - <agent>` |
 
 ---
 
@@ -353,6 +355,7 @@ Per `Agents.md sec. 8`, the skill must pause and surface to the human:
 
 - `wiki-task-board` -- task creation, status updates, and board queries.
 - `eod-status-report` -- team roster parsing and name cross-referencing.
+- `rules/agent-conventions.md` -- edit summaries, error handling, roster discovery.
 - `Agents.md` -- master rules, review protocol (sec. 8), edit summary format (sec. 1).
 - `rules/namespaces.md` -- naming conventions.
 - `Template:Task` on the live wiki -- field names and accepted values.

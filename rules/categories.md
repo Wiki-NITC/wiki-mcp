@@ -24,12 +24,17 @@ The established convention (observed across hundreds of pages) is:
 
 ## Real top-level categories (use these, don't invent)
 
+> **This table is the single source of category names in this repo.** Other rules
+> files (`templates.md`, `page-types.md`) reference names from this table; if a
+> category name appears elsewhere but not here, this file needs updating — flag it.
+
 | Category | What goes in it |
 |---|---|
 | `Category:Events` | Any event or festival edition (also add the year + specific event cat). |
 | `Category:FOSSMeet` | FOSSMeet pages (plus `Category:FOSSMeet YYYY`). |
 | `Category:Ragam`, `Category:Tathva` | Those festivals. |
 | `Category:Clubs` | Student clubs (professional, technical, non-technical). Umbrella for `Category:Technical Clubs`, `Category:Non-Technical Clubs`, `Category:Professional Clubs`. |
+| `Category:Clubs and Organizations` | **Legacy** umbrella for clubs (parented under `Student Life`; applied by the legacy `{{Infobox Club}}`). Prefer `Category:Clubs` for new pages. |
 | `Category:Technical Clubs` | Technical clubs (auto-assigned by `{{Infobox Organization}}` with `type=Technical Organisation`). |
 | `Category:Non-Technical Clubs` | Non-technical clubs (auto-assigned by `{{Infobox Organization}}` with `type=Non-Technical Organisation`). |
 | `Category:Professional Clubs` | Professional clubs (auto-assigned by `{{Infobox Organization}}` with `type=Professional Organisation`). |
@@ -43,6 +48,8 @@ The established convention (observed across hundreds of pages) is:
 | `Category:Curriculum` | B.Tech curriculum / syllabus pages. |
 | `Category:Academics`, `Category:Courses` | Academic content; courses. |
 | `Category:Campus` | Campus places (umbrella). |
+| `Category:Places in NITC` | Campus places — applied automatically by `{{Infobox Building}}`. |
+| `Category:Multidisciplinary Centres` | Centres — applied automatically by `{{Infobox Centre}}`. |
 | `Category:Academic Buildings`, `Category:Laboratories` | Buildings and labs. |
 | `Category:Hostels` | Hostels. |
 | `Category:Amenities`, `Category:Food and Eateries` | Facilities and eateries. |

@@ -37,6 +37,10 @@ templates (`Cite web`, etc.) are *not yet imported*, so don't assume them.
 > (`get-page` on `Template:Infobox X`) or the matching `Form:X` to get the exact,
 > current parameter names. Parameters change; the template/form is the source of truth.
 
+> **Category names** in the tables above must exist in
+> [categories.md](categories.md)'s top-level table — that file is the single
+> authority for category names. If they diverge, categories.md wins.
+
 ## Maintenance & status templates
 
 | Template | Purpose | Auto-categorises pages as | Template page categorised under |
@@ -88,6 +92,13 @@ CS1/Citation modules are **not yet imported** (it's an open task). Until then:
 
 Templates are the wiki's structured-data backbone and live in a protected
 namespace. Treat them as code:
+
+> **Permission note:** this wiki protects the `Template:` namespace with the
+> `editinterface` right specifically — not the more common `editprotected` or
+> `sysop`. If an edit fails with `protectednamespace`, check
+> `Special:ListGroupRights` for which right the Template row actually
+> requires, rather than assuming it's `editprotected`. `scripts/validate-config.sh`
+> checks for `editinterface` on the configured bot account ahead of time.
 
 1. **Reuse first.** Check for an existing template before making a new one.
 2. **Do not edit a live template** that pages depend on without human review —
