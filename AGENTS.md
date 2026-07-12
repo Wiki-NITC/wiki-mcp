@@ -205,6 +205,7 @@ the skill wasn't loaded; the page had to be moved).
 | Task | Skill |
 |---|---|
 | Any read/edit on this wiki (start here) | `nitc-wiki-editing` |
+| "Onboard me" / "what are my tasks" / "what should I work on" | `onboarding` |
 | Meeting transcript → minutes + tasks | `meeting-processor` |
 | Task board: find/claim/create/update tasks | `wiki-task-board` |
 | Task board cleanup / health report | `board-janitor` |

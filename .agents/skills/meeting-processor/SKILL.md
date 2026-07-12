@@ -260,17 +260,20 @@ or "by Friday"), populate the `|deadline=` field. Otherwise leave it empty.
 
 **Category inference (from team roster):**
 
-| Team | Category |
+| Team (roster role) | Category |
 |---|---|
 | Lead | `mcp-admins` |
 | MCP | `mcp-admins` |
 | Templates | `template-admins` |
+| Content | `template-admins` |
 | App | `app-dev` |
+| Mini Apps | `app-dev` |
 | PRC | `prc` |
 | Social Media | `social-media` |
 | Video | `video-editors` |
-| Design | `design` |
+| Brand Book / Design | `design` |
 | Policy | `policy` |
+| Task Board, Demos | leave `category` empty |
 
 If the member is not found in the team roster, leave `category` empty.
 
