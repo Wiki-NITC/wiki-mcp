@@ -19,7 +19,7 @@ Cargo + Page Forms).
 | `HowTo:` | 3200 | Yes | Yes | How-to guides and tutorials. Subpaged: `HowTo/Beginner`, `HowTo/AI`. |
 | `WIKI FOSSCELL NITC:` (Project) | 4 | Yes | Caution | Wiki policy, the Task Board, form-helper pages. Edit policy pages only with human review. |
 | `Category:` | 14 | Yes | Yes | See [categories.md](categories.md). Title Case, plural. |
-| `File:` | 6 | Yes | **No (beta)** | Uploads are disabled in this beta. `Image:` is an alias. |
+| `File:` | 6 | Yes | **No** | Uploads are disabled — see [uploads.md](uploads.md) for status and policy. `Image:` is an alias. |
 | `Help:` | 12 | Yes | Caution | Help docs — edit only with human review. |
 | `User:` | 2 | Yes | Operator only | Only the agent operator's own user pages. |
 

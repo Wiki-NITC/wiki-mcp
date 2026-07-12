@@ -27,6 +27,12 @@ Incorrect:
 
 Heading capitalisation: Sentence case. Capitalise the first word and proper nouns only.
 
+> **Exception — established page families.** Some page families predate this rule
+> and use fixed headings (event pages: `== Sub Committees ==`, `== Highlights ==`;
+> meeting minutes: `== Meeting Info ==`, `== Action Items ==`). When adding to an
+> existing family, match its established headings — consistency within the family
+> beats the general rule.
+
 ## 2. Text formatting
 
 | Purpose | Syntax |
@@ -57,16 +63,20 @@ Do not use HTML `<b>`, `<i>`, or `<u>` tags — use wikitext equivalents.
 
 ## 5. References and citations
 
-- Use `<ref>` tags for inline citations.
-- Use the `{{Cite web}}` and `{{Cite book}}` templates for structured citations.
+- Use `<ref>` tags for inline citations, containing a plain external link and
+  source name:
+  ```wikitext
+  <ref>[https://example.com Example Source], retrieved <TODAY>.</ref>
+  ```
+- **Do not use `{{Cite web}}`, `{{Cite book}}`, or `{{Reflist}}`** — the CS1
+  citation modules are not imported on this wiki, so they render as red links.
+  See [templates.md](templates.md) § Citations.
 - Place references section at the bottom, before categories:
 
 ```wikitext
 == References ==
 <references />
 ```
-
-Do not use `{{Reflist}}` on the NITC Wiki — use `<references />` instead.
 
 ## 6. Lists
 

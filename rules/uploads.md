@@ -1,11 +1,12 @@
 # Upload Rules
 
-> **Uploads are disabled in the current beta.** The MCP server runs with no allowed
-> upload directories, so the `upload-file` tool is unavailable. The rules below
-> describe the intended policy for when uploads are enabled later — do not attempt
-> to upload files for now.
+> **Uploads are currently disabled.** The MCP server runs with no allowed
+> upload directories, so the `upload-file` tool is unavailable. **Do not attempt
+> to upload files.** Everything below this banner is the policy that takes
+> effect when uploads are enabled later.
 
-This document defines rules for file uploads made by AI agents to the NITC Wiki.
+This document is the **single owner** of upload policy for AI agents on the
+NITC Wiki (Agents.md §5 and the skills point here).
 
 ---
 
@@ -55,9 +56,11 @@ Every upload must include exactly one license template on the file description p
 | Own work, public domain | `{{PD-self}}` |
 | GNU Free Documentation License | `{{GFDL}}` |
 | Wikimedia Commons import | `{{From Wikimedia Commons}}` |
-| BSD / MIT / Apache licensed | `{{Open source license|BSD-3-Clause}}` |
 
-## Upload procedure for agents
+> Verify the license template exists (`get-page` on `Template:<name>`) before
+> using it — this table lists intent, the live wiki is the authority.
+
+## Upload procedure for agents (when uploads are enabled)
 
 1. Verify the file format is in the allowed list.
 2. Verify the file size is under the limit.

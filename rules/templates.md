@@ -37,6 +37,10 @@ templates (`Cite web`, etc.) are *not yet imported*, so don't assume them.
 > (`get-page` on `Template:Infobox X`) or the matching `Form:X` to get the exact,
 > current parameter names. Parameters change; the template/form is the source of truth.
 
+> **Category names** in the tables above must exist in
+> [categories.md](categories.md)'s top-level table — that file is the single
+> authority for category names. If they diverge, categories.md wins.
+
 ## Maintenance & status templates
 
 | Template | Purpose | Auto-categorises pages as | Template page categorised under |
