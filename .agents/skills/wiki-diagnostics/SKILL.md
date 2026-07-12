@@ -162,7 +162,7 @@ change).
 
 ## Authoritative references
 
-- `Agents.md` - what requires human review before writing.
+- `AGENTS.md` - what requires human review before writing.
 - `rules/templates.md` - which templates exist.
 - `rules/structured-data.md` - how Cargo/SMW works; what not to break.
 - `rules/page-types.md` - preload content patterns per page type.

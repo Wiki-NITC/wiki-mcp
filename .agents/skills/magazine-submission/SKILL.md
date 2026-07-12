@@ -307,6 +307,6 @@ types (including one Malayalam entry for disclaimer spelling).
   manual upload interface.
 - **Editing `Template:Magazine Submission`** — the template declares
   and stores Cargo data. Changing it requires a table rebuild and
-  human review (see `Agents.md` §4).
+  human review (see `AGENTS.md` §4).
 - **Non‑magazine page types** — for events, clubs, people, etc., load
   the `nitc-wiki-editing` skill instead.

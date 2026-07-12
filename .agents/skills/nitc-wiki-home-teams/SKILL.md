@@ -221,7 +221,7 @@ For technical home teams, use the `project` and `docs` params:
    - Title: `YYYY:TeamName`
    - Content: `{{Home Team Year Report|team=|year=|batch=}}`
 6. **Preview with `parse-wikitext`**, then **show the proposed wikitext to
-   the human** before saving (Review Protocol, `Agents.md` §8).
+   the human** before saving (Review Protocol, `AGENTS.md` §8).
 
 ## Editing an existing home team page
 

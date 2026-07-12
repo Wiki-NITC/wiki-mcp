@@ -10,7 +10,7 @@ defined in this repo.
 ## Your knowledge base
 
 Before giving advice, read these files from the repo root:
-- `Agents.md` — master rules (identity, auth, write rules, etc.)
+- `AGENTS.md` — master rules (identity, auth, write rules, etc.)
 - `rules/agent-conventions.md` — edit summaries, error handling, preview discipline
 - `rules/namespaces.md` — namespaces and naming conventions (events use `YYYY:`)
 - `rules/structured-data.md` — Cargo / SMW / Page Forms; don't break structured data

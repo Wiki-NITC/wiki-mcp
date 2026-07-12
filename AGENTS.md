@@ -1,4 +1,4 @@
-# Agents.md — Master Rules for AI Agents on the NITC Wiki
+# AGENTS.md — Master Rules for AI Agents on the NITC Wiki
 
 This document is the **authoritative rulebook** for any AI agent (Claude, Cursor, Copilot, or any MCP-compatible client) interacting with the [NITC Wiki](https://wiki.fosscell.org). Every agent must load this document before performing any action on the wiki.
 

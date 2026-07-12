@@ -3,7 +3,7 @@
 Cross-cutting operating rules for every AI agent working on the NITC Wiki
 through the MCP server. Skills and other rules files link here instead of
 restating these rules. If another document conflicts with this one,
-`Agents.md` takes precedence, then this file.
+`AGENTS.md` takes precedence, then this file.
 
 ---
 
@@ -129,7 +129,7 @@ templates by design).
 
 ## Authoritative references
 
-- `Agents.md` - master rulebook (identity, auth, review protocol, forbidden actions).
+- `AGENTS.md` - master rulebook (identity, auth, review protocol, forbidden actions).
 - `rules/structured-data.md` - the `{{#cargo_query:}}`-via-`parse-wikitext` technique.
 - `rules/task-board.md` - task lifecycle and task edit summaries.
 - `docs/rotating-credentials.md` - credential rotation runbook.

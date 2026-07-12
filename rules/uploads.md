@@ -6,7 +6,7 @@
 > effect when uploads are enabled later.
 
 This document is the **single owner** of upload policy for AI agents on the
-NITC Wiki (Agents.md §5 and the skills point here).
+NITC Wiki (AGENTS.md §5 and the skills point here).
 
 ---
 

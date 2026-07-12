@@ -255,4 +255,4 @@ The `board-janitor` skill (`.agents/skills/board-janitor`) automates this report
 - `.agents/skills/wiki-task-board` — agent skill for working with tasks.
 - `rules/page-types.md` — page-type recipe for tasks.
 - `rules/templates.md` — template usage rules.
-- `Agents.md` — master rulebook and review protocol.
+- `AGENTS.md` — master rulebook and review protocol.

@@ -100,7 +100,7 @@ User:<username>/Updates/<ISO week, e.g. 2026-W28>
 ```
 
 with summary `Bot: Add weekly update <week> - <agent>`, following the
-review protocol (`Agents.md` §8 — show the wikitext first).
+review protocol (`AGENTS.md` §8 — show the wikitext first).
 
 ## Guardrails
 

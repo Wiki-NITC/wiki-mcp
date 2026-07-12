@@ -170,6 +170,6 @@ renaming anything.
 
 - `rules/structured-data.md` - how Cargo is set up on this wiki; what not to
   touch (never edit `{{#cargo_declare:}}` blocks).
-- `Agents.md` - review protocol and write rules.
+- `AGENTS.md` - review protocol and write rules.
 - `.agents/skills/wiki-diagnostics` - page-level structural checks; this
   skill is the bulk, query-driven complement to its Cargo section.

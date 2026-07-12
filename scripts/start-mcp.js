@@ -134,9 +134,65 @@ const child = spawn(command, {
   shell: true,
 });
 
+// --- Inject NITC house rules into the MCP handshake --------------------------
+// The upstream server has no config option for custom instructions, but every
+// client connects through this launcher, so we append our rules pointer to the
+// initialize response's `instructions` field. This is how agents that only
+// configured the MCP server (no repo folder, no skills) still learn the house
+// rules the moment they connect.
+const NITC_INSTRUCTIONS =
+  "House rules for the NITC Wiki (wiki.fosscell.org): before your first write " +
+  "in a session, fetch the page \"WIKI FOSSCELL NITC:MCP Rules\" with get-page " +
+  "and follow it. Highlights: meeting minutes live at \"WIKI FOSSCELL " +
+  "NITC:Meetings/YYYY-MM-DD\"; events at \"YYYY:EventName\" with a redirect; " +
+  "task pages at \"WIKI FOSSCELL NITC:Tasks/<name>\" using Template:Task with " +
+  "only the documented status/priority/category values; edit summaries are " +
+  "\"Bot: <action> - <agent-name>\"; preview wikitext with parse-wikitext " +
+  "before saving and batch cosmetic changes into one revision; pass latestId " +
+  "on update-page; never create or edit Cargo-declaring templates. Full rules " +
+  "and task-specific skills: https://github.com/Wiki-NITC/wiki-mcp";
+
 process.stdin.pipe(child.stdin);
-child.stdout.pipe(process.stdout);
 child.stderr.pipe(process.stderr);
+
+let stdoutBuf = "";
+let injected = false;
+child.stdout.on("data", (chunk) => {
+  if (injected) {
+    process.stdout.write(chunk);
+    return;
+  }
+  stdoutBuf += chunk.toString("utf8");
+  let idx;
+  while ((idx = stdoutBuf.indexOf("\n")) !== -1) {
+    const line = stdoutBuf.slice(0, idx);
+    stdoutBuf = stdoutBuf.slice(idx + 1);
+    let out = line;
+    if (!injected && line.includes('"serverInfo"')) {
+      try {
+        const msg = JSON.parse(line);
+        if (msg.result && msg.result.serverInfo) {
+          msg.result.instructions =
+            (msg.result.instructions ? msg.result.instructions + "\n\n" : "") +
+            NITC_INSTRUCTIONS;
+          out = JSON.stringify(msg);
+          injected = true;
+        }
+      } catch {
+        // Not a complete/parseable JSON message - pass through untouched.
+      }
+    }
+    process.stdout.write(out + "\n");
+  }
+  if (injected && stdoutBuf) {
+    // Flush any partial line buffered before injection completed.
+    process.stdout.write(stdoutBuf);
+    stdoutBuf = "";
+  }
+});
+child.stdout.on("end", () => {
+  if (stdoutBuf) process.stdout.write(stdoutBuf);
+});
 
 child.on("error", (err) => {
   log(`Failed to launch the MCP server: ${err.message}`);
