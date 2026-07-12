@@ -17,7 +17,7 @@ const { spawn } = require("child_process");
 
 // Pin the upstream server so every user runs the same version.
 // To upgrade, bump this and update CHANGELOG.md.
-const MCP_VERSION = "0.12.0";
+const MCP_VERSION = "0.13.1";
 
 const DEFAULT_WIKI = "wiki.fosscell.org";
 
@@ -118,15 +118,25 @@ if (fs.existsSync(envPath)) {
 }
 
 // --- Launch the pinned upstream server ----------------------------------------
-const args = ["-y", `@professional-wiki/mediawiki-mcp-server@${MCP_VERSION}`, ...process.argv.slice(2)];
+// npx is npx.cmd on Windows, which requires a shell; a shell needs the command
+// as one string. Explicit stdio pipes (not "inherit") because inherit does not
+// reliably forward piped stdin through cmd.exe on Windows - and stdin/stdout
+// ARE the MCP channel.
+const extraArgs = process.argv.slice(2).map((a) => JSON.stringify(a)).join(" ");
+const command =
+  `npx -y @professional-wiki/mediawiki-mcp-server@${MCP_VERSION}` +
+  (extraArgs ? ` ${extraArgs}` : "");
 
-const child = spawn("npx", args, {
+const child = spawn(command, {
   cwd: repoRoot,
   env: { ...process.env, CONFIG: configPath },
-  stdio: "inherit",
-  // npx is npx.cmd on Windows; shell resolves it on every platform.
-  shell: process.platform === "win32",
+  stdio: ["pipe", "pipe", "pipe"],
+  shell: true,
 });
+
+process.stdin.pipe(child.stdin);
+child.stdout.pipe(process.stdout);
+child.stderr.pipe(process.stderr);
 
 child.on("error", (err) => {
   log(`Failed to launch the MCP server: ${err.message}`);
