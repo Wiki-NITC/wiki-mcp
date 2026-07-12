@@ -17,7 +17,7 @@ notes, never rush the whole backlog in one pass.
 ## Finding work
 
 MediaWiki's maintenance reports are includable special pages, and rendering
-them through `parse-wikitext` is explicitly permitted (`Agents.md` §3):
+them through `parse-wikitext` is explicitly permitted (`AGENTS.md` §3):
 
 ```
 parse-wikitext(wikitext="{{Special:UncategorizedPages/100}}")

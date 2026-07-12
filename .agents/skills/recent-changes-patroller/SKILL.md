@@ -88,7 +88,7 @@ per page, `latestId` passed, summaries per `rules/agent-conventions.md` §1.
 - Don't re-flag findings already reported in a previous patrol unless they
   got worse (keep a short state note with the report if run recurringly).
 - Escalate anything that looks like vandalism or spam to a human admin
-  immediately — blocking users is always human-only (`Agents.md` §6).
+  immediately — blocking users is always human-only (`AGENTS.md` §6).
 - On write errors, follow `rules/agent-conventions.md` §3.
 
 ## Authoritative references

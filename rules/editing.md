@@ -121,7 +121,7 @@ Always include `class="wikitable"` for standard styling.
 
 ## 8. Edit summaries
 
-See `Agents.md § Identity` for the required edit summary format. Summaries must:
+See `AGENTS.md § Identity` for the required edit summary format. Summaries must:
 
 - Be non-empty.
 - Briefly describe what changed and why.

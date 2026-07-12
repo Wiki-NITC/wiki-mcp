@@ -329,7 +329,7 @@ Use `update-page` with edit-conflict detection (`latestId` from the initial
 
 ## Review protocol
 
-Per `Agents.md sec. 8`, the skill must pause and surface to the human:
+Per `AGENTS.md sec. 8`, the skill must pause and surface to the human:
 
 1. **Before creating the minutes page** -- show the proposed wikitext.
 2. **Before creating any task page** -- show the proposed `{{Task}}` content.
@@ -356,6 +356,6 @@ Format follows `rules/agent-conventions.md` sec. 1:
 - `wiki-task-board` -- task creation, status updates, and board queries.
 - `eod-status-report` -- team roster parsing and name cross-referencing.
 - `rules/agent-conventions.md` -- edit summaries, error handling, roster discovery.
-- `Agents.md` -- master rules, review protocol (sec. 8), edit summary format (sec. 1).
+- `AGENTS.md` -- master rules, review protocol (sec. 8), edit summary format (sec. 1).
 - `rules/namespaces.md` -- naming conventions.
 - `Template:Task` on the live wiki -- field names and accepted values.

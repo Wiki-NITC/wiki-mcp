@@ -72,7 +72,7 @@ it. Mark thin pages with `{{Stub}}` (adds `Category:Stubs`).
 This skill is a summary. The full, verified rules live in the `wiki-mcp` repo —
 read them when you need detail:
 
-- `Agents.md` — master rulebook (identity, read/write rules, what's enforced).
+- `AGENTS.md` — master rulebook (identity, read/write rules, what's enforced).
 - `rules/agent-conventions.md` — edit summaries, error handling, preview
   discipline, known server failure modes.
 - `rules/namespaces.md` — full namespace map + naming conventions.

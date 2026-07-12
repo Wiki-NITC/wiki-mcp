@@ -114,9 +114,28 @@ already in `.gitignore`.
 
 ---
 
+## How agents get the rules
+
+The goal: an agent touching this wiki has the house rules in context **every
+time, whichever client it connects from**. Three channels deliver that:
+
+1. **opencode (recommended): open this folder as your project.** opencode
+   auto-loads [`AGENTS.md`](AGENTS.md) (the file follows the cross-tool
+   AGENTS.md convention) and discovers the skills in
+   [`.agents/skills/`](.agents/skills/) — full context, zero setup.
+2. **Any client, automatically: the launcher injects the rules into the MCP
+   handshake.** `start-mcp.js` appends the NITC house-rules summary (and a
+   pointer to the canonical wiki rules page) to the server's `instructions`
+   during initialize — so even a client with *only* the MCP server configured
+   gets grounded at connect time.
+3. **On the wiki itself:** the condensed rulebook lives at
+   [`WIKI FOSSCELL NITC:MCP Rules`](https://wiki.fosscell.org/WIKI_FOSSCELL_NITC:MCP_Rules),
+   fetchable by any agent with `get-page` — which is exactly what the injected
+   instructions tell it to do before its first write.
+
 ## House rules for agents
 
-Every agent acting on the wiki should follow [`Agents.md`](Agents.md) and the
+Every agent acting on the wiki should follow [`AGENTS.md`](AGENTS.md) and the
 detailed guides in [`rules/`](rules/):
 
 - [`rules/agent-conventions.md`](rules/agent-conventions.md) — edit summaries, error handling, preview discipline
@@ -126,7 +145,7 @@ detailed guides in [`rules/`](rules/):
 - [`rules/categories.md`](rules/categories.md), [`rules/templates.md`](rules/templates.md), [`rules/editing.md`](rules/editing.md), [`rules/task-board.md`](rules/task-board.md), [`rules/uploads.md`](rules/uploads.md)
 
 These are verified against the live wiki. Most are **guidance the AI is asked to
-follow**, not limits the server hardware-enforces — see the top of `Agents.md` for
+follow**, not limits the server hardware-enforces — see the top of `AGENTS.md` for
 what's actually enforced.
 
 Loadable **skills** under [`.agents/skills/`](.agents/skills/) package the

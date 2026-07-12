@@ -231,4 +231,4 @@ To find members of a team:
 - `Template:Task` on the live wiki — field names, accepted status/priority/category values.
 - `rules/page-types.md` — "Task (Project Task Board)" recipe.
 - `.agents/skills/cargo-auditor` — parser-function query technique.
-- `Agents.md` — master rules, review protocol, and edit summary format.
+- `AGENTS.md` — master rules, review protocol, and edit summary format.

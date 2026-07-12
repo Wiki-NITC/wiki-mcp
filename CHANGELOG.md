@@ -2,6 +2,26 @@
 
 All notable changes to this repo are documented here.
 
+## [0.2.1] — 2026-07-13
+
+Agents now get the house rules in context on every connection, from any
+client.
+
+### Added
+- **Rules injected into the MCP handshake.** `start-mcp.js` appends the NITC
+  house-rules summary (naming conventions, task board values, edit summary
+  format, preview discipline, error handling) to the server's `instructions`
+  during initialize, pointing at the canonical wiki page
+  `WIKI FOSSCELL NITC:MCP Rules`. Clients that only configured the MCP server
+  — no repo folder, no skills — are grounded the moment they connect.
+- **README section "How agents get the rules"** documenting the three
+  channels: opencode folder auto-load, handshake injection, wiki rules page.
+
+### Changed
+- **`Agents.md` renamed to `AGENTS.md`** (cross-tool convention): opencode
+  and other AGENTS.md-aware clients now auto-load the master rulebook when
+  the repo is opened as a project. All references updated.
+
 ## [0.2.0] — 2026-07-12
 
 Complete revamp of rules, skills, and scripts. An audit found 26 verified
@@ -26,7 +46,7 @@ validator bugs); this release fixes them and adds five new skills.
   bot-password rotation.
 - **Rules consolidated to single owners.** `categories.md` owns category
   names; `uploads.md` owns upload policy; `structured-data.md` owns the
-  cargo_query-via-parse-wikitext technique; `Agents.md` no longer contradicts
+  cargo_query-via-parse-wikitext technique; `AGENTS.md` no longer contradicts
   itself about `bot`/`minor`/`maxlag` (the edit tools do expose `bot` and
   `latestId`; they do not expose `minor`/`maxlag`/`assert=bot`).
 - **`editing.md` no longer recommends `{{Cite web}}`/`{{Cite book}}`** — CS1
@@ -90,7 +110,7 @@ First beta. The repo now works against the live wiki out of the box.
   for reproducible beta installs. Bump in `scripts/start-mcp.sh` to upgrade.
 - **Rewrote the README** with per-client setup (opencode, Claude Desktop, Cursor),
   Node 22.12+ prerequisite, troubleshooting, and a beta notice.
-- **`Agents.md`** now states clearly what the wiki/MCP enforce versus what is
+- **`AGENTS.md`** now states clearly what the wiki/MCP enforce versus what is
   agent-followed guidance, and notes that `bot` / `minor` / `maxlag` / `assert=bot`
   are not exposed by the MCP edit tools.
 - **`start-mcp.sh`** adds a soft Node-version check and clearer error messages.
@@ -108,11 +128,11 @@ First beta. The repo now works against the live wiki out of the box.
   course, building, hostel, home team, HowTo, task).
 - **New skill `.agents/skills/nitc-wiki-editing/`** so any skill-aware agent loads
   these conventions on demand.
-- **`Agents.md`** read/write rules updated for the real namespaces, the
+- **`AGENTS.md`** read/write rules updated for the real namespaces, the
   structured-data workflow, and Cargo/Module/Widget edit protections.
 
 ### Removed
-- **File uploads are disabled** for this beta. `Agents.md`, the README, and the
+- **File uploads are disabled** for this beta. `AGENTS.md`, the README, and the
   setup agent all reflect that agents cannot upload files yet.
 - **Removed the symlink machinery** (`symlinks/` and `scripts/setup-symlinks.sh`).
   Each client points at the repo directly; no cross-tool symlinks are needed.
