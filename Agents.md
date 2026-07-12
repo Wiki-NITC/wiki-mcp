@@ -2,6 +2,8 @@
 
 This document is the **authoritative rulebook** for any AI agent (Claude, Cursor, Copilot, or any MCP-compatible client) interacting with the [NITC Wiki](https://wiki.fosscell.org). Every agent must load this document before performing any action on the wiki.
 
+Cross-cutting operating conventions (edit summaries, error handling, dates, preview discipline) live in [`rules/agent-conventions.md`](rules/agent-conventions.md) — read it together with this file.
+
 ---
 
 ## 0. What is enforced vs. what is guidance
@@ -9,8 +11,8 @@ This document is the **authoritative rulebook** for any AI agent (Claude, Cursor
 Be honest about where these rules live:
 
 - **Enforced by the wiki** — MediaWiki user rights and bot-password grants. An agent literally cannot do what its account isn't permitted to do (e.g. delete a page without the delete right).
-- **Provided by the MCP server** — the bundled `@professional-wiki/mediawiki-mcp-server` exposes a fixed set of tools (`get-page`, `update-page`, `upload-file`, `whoami`, etc.). Uploads are off until upload directories are configured. The server does **not** expose `bot`, `minor`, `assert=bot`, or `maxlag` parameters on its edit tools.
-- **Guidance only (this document + `rules/`)** — naming conventions, edit-summary format, namespace etiquette, license tags. Nothing mechanically enforces these; they work only because the agent is asked to follow them. Where a rule below mentions a parameter the MCP tools don't support (`bot`, `minor`, `maxlag`, `assert=bot`), treat it as background — the MCP edit tools simply take a title, content, and an edit summary.
+- **Provided by the MCP server** — the bundled `@professional-wiki/mediawiki-mcp-server` exposes a fixed set of tools (`get-page`, `update-page`, `upload-file`, `whoami`, etc.). Uploads are off until upload directories are configured. The edit tools expose a `bot` flag and `latestId` edit-conflict detection, plus `section` and `mode=append/prepend` editing; they do **not** expose `minor`, `maxlag`, or `assert=bot`.
+- **Guidance only (this document + `rules/`)** — naming conventions, edit-summary format, namespace etiquette, license tags. Nothing mechanically enforces these; they work only because the agent is asked to follow them.
 
 When in doubt, prefer the [Review Protocol](#8-review-protocol): surface the action to a human.
 
@@ -22,13 +24,14 @@ Every edit, upload, or other logged action must identify the agent clearly.
 
 **Edit summary format:**
 ```
-Bot: <action> — <agent-name>
+Bot: <action> - <agent-name>
 ```
 
 Examples:
-- `Bot: Creating page "2026:Ragam" — Claude`
-- `Bot: Fixing typo in "FOSSCell/About" — Cursor`
-- `Bot: Uploading poster for 2025:Tathva — Copilot`
+- `Bot: Create page "2026:Ragam" - Claude`
+- `Bot: Fix typo in "FOSSCell/About" - Cursor`
+
+The MCP server automatically appends `(via <tool> on MediaWiki MCP Server)` to summaries — do not add it yourself. Full summary conventions: [`rules/agent-conventions.md`](rules/agent-conventions.md).
 
 The agent name must match the `User-Agent` header sent to the MediaWiki API.
 
@@ -37,18 +40,13 @@ The agent name must match the `User-Agent` header sent to the MediaWiki API.
 <agent-name>/<version> (https://wiki.fosscell.org; <operator-username>) <library>/<version>
 ```
 
-Example:
-```
-Claude/1.0 (https://wiki.fosscell.org; User:ExampleBot) MediaWiki-MCP-Server/1.0
-```
-
 ---
 
 ## 2. Authentication
 
 ### Preferred — Bot Password
 - Create a bot password at `Special:BotPasswords` with minimal scopes.
-- Store credentials in `config.json` under `username` and `password`.
+- Store credentials in `.env` (synced into `config.json` by the launcher) — see the README and `docs/rotating-credentials.md`.
 - Each agent should have its own dedicated bot password.
 
 ### Alternative — OAuth2
@@ -59,7 +57,6 @@ Claude/1.0 (https://wiki.fosscell.org; User:ExampleBot) MediaWiki-MCP-Server/1.0
 ### General rules
 - Never share credentials between agents. Each agent gets its own token or bot password.
 - Anonymous (unauthenticated) access is allowed for read-only tools only.
-- Authenticated sessions should send the `assert=bot` parameter to enable bot flags where the client supports it (direct MediaWiki API access only; not exposed by the MCP tools).
 
 ---
 
@@ -83,8 +80,10 @@ Agents may freely read any page in the following namespaces:
 | `WIKI FOSSCELL NITC:` (Project) | 4 | Policy, Task Board, form helpers |
 
 For the full namespace map and naming conventions see
-[`rules/namespaces.md`](rules/namespaces.md). Agents must not read `Special:` pages
-or restricted API modules without explicit human approval.
+[`rules/namespaces.md`](rules/namespaces.md). Agents must not browse `Special:` pages
+or restricted API modules directly, with one exception: **includable report pages**
+(e.g. `{{Special:UncategorizedPages}}`, `{{Special:LonelyPages}}`) may be rendered
+through `parse-wikitext` for maintenance reports.
 
 > **This is a structured-data wiki** (Cargo + SMW + Page Forms). Before creating
 > content, read [`rules/structured-data.md`](rules/structured-data.md) and the
@@ -101,65 +100,34 @@ or restricted API modules without explicit human approval.
 3. The page must belong to an allowed namespace (see Read Rules).
 4. Use the matching **form/infobox/Cargo template** for the page type — don't hand-format structured content. See [`rules/page-types.md`](rules/page-types.md).
 5. Add at least one **category** (real names only — see [`rules/categories.md`](rules/categories.md)).
+6. **Preview with `parse-wikitext` before saving.** Iterate in preview, save once. See [`rules/agent-conventions.md`](rules/agent-conventions.md).
 
 ### Before editing a page
-1. Fetch the current content (`get-page`).
-2. Do not blank content. If a page should be deleted, surface to a human operator.
-3. Always provide a non-empty edit summary (see Identity section).
+1. Fetch the current content **and revision ID**: `get-page` with `metadata=true`.
+2. Pass that revision ID as `latestId` on `update-page` so concurrent edits are detected instead of clobbered.
+3. Do not blank content. If a page should be deleted, surface to a human operator.
+4. Always provide a non-empty edit summary (see Identity section).
+5. Batch related cosmetic changes into one revision — never iterate styling through saved edits.
 
 ### Edit parameters
-
-> The MCP server's `update-page` / `create-page` tools do **not** expose `bot`, `minor`, `maxlag`, or `assert=bot`. When editing through MCP, just provide a clear edit summary. The settings below are documented for completeness and apply only to direct MediaWiki API access.
-
-- Set `bot: true` to suppress edits from recent changes (bot flag required).
-- Set `minor: true` for typo fixes, formatting, and link corrections.
-- Set `minor: false` for content additions, new sections, or structural changes.
-- Respect `maxlag=5` — pause and retry with exponential backoff if lag is too high.
+- `bot: true` — marks the edit as a bot edit (hidden from Recent Changes by default). Takes effect only when the account has the `bot` right or the high-volume bot-password grant. Use it for bulk or automated edit runs.
+- `latestId` — base revision for edit-conflict detection. Use it on every `update-page`.
+- `section` / `mode=append|prepend` — edit one section or send a delta instead of shipping the full page source.
+- `minor`, `maxlag`, and `assert=bot` are **not** exposed by the MCP tools (direct-API concepts only).
 
 ### Prohibited edits
 - No edits to `MediaWiki:` namespace pages (system messages).
 - No edits to user JS/CSS pages (`User:*.js`, `User:*.css`) unless the operator explicitly confirms.
-- No changes to a **Cargo-declaring template** (`{{#cargo_declare}}` / `{{#cargo_store}}`) without human review — it needs a table rebuild.
+- No changes to a **Cargo-declaring template** (`{{#cargo_declare}}` / `{{#cargo_store}}`) — see [`rules/agent-conventions.md`](rules/agent-conventions.md) §7.
 - No edits to `Module:`, `Widget:`, `GeoJson:`, or `smw/schema:` pages without human review (code/schema).
 
 ---
 
 ## 5. Upload Rules
 
-> **Uploads are disabled in the current beta.** The MCP server is run without any
-> allowed upload directories, so `upload-file` is unavailable and agents cannot add
-> files to the wiki. The rules below describe the intended policy for when uploads
-> are turned on later.
-
-### Allowed file types
-| Format | Extensions | Max size |
-|---|---|---|
-| PNG | `.png` | 10 MB |
-| JPEG | `.jpg`, `.jpeg` | 10 MB |
-| SVG | `.svg` | 5 MB |
-| GIF (animated) | `.gif` | 5 MB |
-| GIF (static) | `.gif` | 10 MB |
-
-### Naming conventions
-- Use descriptive names with hyphens: `Ragam-2025-poster.png`
-- Avoid special characters, spaces, or uppercase extensions.
-- Prefix with event or topic name when applicable.
-
-### License tags
-Every upload must include exactly one license template on the file description page:
-
-| License | Template |
-|---|---|
-| Creative Commons Attribution-ShareAlike 4.0 | `{{CC-BY-SA-4.0}}` |
-| Creative Commons Attribution 4.0 | `{{CC-BY-4.0}}` |
-| Own work, public domain | `{{PD-self}}` |
-| GNU Free Documentation License | `{{GFDL}}` |
-| Wikimedia Commons import | `{{From Wikimedia Commons}}` |
-
-### Prohibited uploads
-- Non-free / fair use content (the wiki is CC-BY-SA).
-- Executables, archives (`.zip`, `.rar`), or documents (`.docx`, `.pdf` — except for reference material).
-- Files with no license tag.
+Upload policy — allowed formats, naming, license tags, and the current
+**uploads disabled** status — lives in [`rules/uploads.md`](rules/uploads.md),
+the single owner of that policy.
 
 ---
 
@@ -180,14 +148,11 @@ The following actions are **always forbidden** without explicit, written human a
 
 ## 7. Rate Limits and Error Handling
 
-| Situation | Behaviour |
-|---|---|
-| `maxlag` exceeded (5 second default) | Wait 10 seconds, retry. Double wait on each subsequent failure (up to 120s max). |
-| HTTP 429 Too Many Requests | Read `Retry-After` header. Wait that many seconds + 5s jitter. |
-| Edit conflict (revision mismatch) | Re-fetch page, re-apply changes, retry. If conflict persists, abort and surface to human. |
-| Network error / timeout | Retry up to 3 times with 5s backoff. Then abort. |
-| API error: `badtags` | The configured change tag does not exist on the wiki. Contact a sysop. |
-| API error: `permissiondenied` | The token lacks required grants. Surface to human. |
+MCP tool errors fall into seven categories: `not_found`, `permission_denied`,
+`invalid_input`, `conflict`, `authentication`, `rate_limited`, and
+`upstream_failure`. The required response to each — including the
+`conflict` → re-fetch `latestId` → retry-once pattern — is defined in
+[`rules/agent-conventions.md`](rules/agent-conventions.md) §3.
 
 Agents must never silently swallow errors. Every error must be logged in the agent's output.
 
@@ -220,7 +185,7 @@ When the user asks you to prepare a draft (of category pages, template changes, 
 
 ### Contents
 1. **Draft document** — one or more `.md` files describing every proposed change (page content, category tags, etc.). Name them descriptively, e.g. `category-hierarchy-draft.md`.
-2. **HTML mockups** — one or more `draftpage-{N}.html` files showing how the modified pages will look after the changes are applied. The mockups should mimic the wiki's actual rendering (Citizen skin) as closely as possible: category member lists, subcategory grids, and page content.
+2. **HTML mockups** — one or more `draftpage-{N}.html` files showing how the modified pages will look after the changes are applied. The mockups should mimic the wiki's actual rendering (Citizen skin) as closely as possible.
    - If the draft affects many similar pages (e.g. adding a category tag to 50 templates), make mockups of **2–3 representative pages** only.
    - Mockups must be self-contained HTML files (CSS inline or in `<style>`).
 
@@ -231,6 +196,6 @@ The human operator should be able to open each `draftpage-*.html` in a browser a
 
 ## 10. Enforcement
 
-- Every agent integration in the Wiki-NITC organisation **must** load this document and follow its rules.(Rules are present in the rules folder.)
+- Every agent integration in the Wiki-NITC organisation **must** load this document, [`rules/agent-conventions.md`](rules/agent-conventions.md), and the topic rules in `rules/` — and follow them.
 - If an agent's setup contradicts any rule here, this document takes precedence.
 - Violations should be reported to the wiki sysops via `Special:EmailUser` or the FOSS Cell communication channel.
