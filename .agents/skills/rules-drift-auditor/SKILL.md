@@ -27,6 +27,7 @@ never wiki edits.
 | `rules/task-board.md` status/priority sets | `Template:Task` source + live data | `get-page("Template:Task")` for the declared sets; `group by=status` query for values actually in use |
 | `rules/namespaces.md` namespace map | `get-site-info` | diff IDs and names; check the year-namespace range is still current |
 | `rules/structured-data.md` forms list | `Form:` namespace | `search-page-by-prefix(prefix="", namespace=106)` |
+| The wiki's condensed rulebook `WIKI FOSSCELL NITC:MCP Rules` (served to every agent via the MCP handshake) | this repo's AGENTS.md + rules/ | `get-page` it and diff against the repo: taxonomy values, naming conventions, never-do list, summary format must all match; flag any statement the repo no longer makes |
 | Version pin in `scripts/start-mcp.js` | upstream npm/GitHub releases | web check of `@professional-wiki/mediawiki-mcp-server` releases; report if the pin lags |
 | "Uploads disabled" claims | live config / a `whoami includeRights` check | if upload rights appear, flag every doc that says disabled |
 

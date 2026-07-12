@@ -37,11 +37,23 @@ setup works on Windows, macOS, and Linux**.
 > (Windows: `powershell -File scripts\validate-config.ps1`) any time to confirm
 > the wiki is reachable and your credentials have the rights editing needs.
 
-### opencode
+### opencode (recommended)
 
-Open the `wiki-mcp` folder as your project. opencode auto-discovers
-[`opencode.json`](opencode.json) at the repo root — no further config needed. Then
-just ask about the wiki.
+Open the `wiki-mcp` folder as your project. That single step gives you
+everything:
+
+- [`opencode.json`](opencode.json) auto-starts the MCP server — no config.
+- [`AGENTS.md`](AGENTS.md) (the master rulebook, with the task-to-skill
+  routing table) loads into your agent automatically.
+- The 19 workflow skills in [`.agents/skills/`](.agents/skills/) become
+  available — meeting minutes, task board, event pages, magazine, audits.
+
+Then just ask about the wiki. This is the fullest-context way to run an
+agent against the wiki; other clients get the essentials injected at
+connect time, but only opencode-in-this-folder gets the whole toolkit.
+
+> Don't open some other folder and add the server manually — you'd lose the
+> rulebook and skills. Work from `wiki-mcp` as the project root.
 
 ### Claude Desktop
 

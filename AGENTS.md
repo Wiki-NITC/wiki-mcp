@@ -202,9 +202,20 @@ versions get conventions wrong (real example: meeting minutes created at a
 free-form title instead of `WIKI FOSSCELL NITC:Meetings/YYYY-MM-DD` because
 the skill wasn't loaded; the page had to be moved).
 
+**Session start rule:** on the user's first message, if `whoami` shows an
+authenticated user, automatically run the `onboarding` skill in full — setup
+check (start onboarding immediately if incomplete; writes still need their
+confirmation), their open/overdue tasks, and recommended unclaimed tasks for
+their team — delivered as a compact dashboard opening your first reply, then
+proceed with their actual request. Anonymous sessions get no dashboard — but
+if they ask about contributing or a write fails with `authentication`, guide
+them through the account → bot password → `.env` funnel (the `onboarding`
+skill's Step 0).
+
 | Task | Skill |
 |---|---|
 | Any read/edit on this wiki (start here) | `nitc-wiki-editing` |
+| Session start (automatic) / "onboard me" / "what are my tasks" | `onboarding` |
 | Meeting transcript → minutes + tasks | `meeting-processor` |
 | Task board: find/claim/create/update tasks | `wiki-task-board` |
 | Task board cleanup / health report | `board-janitor` |
