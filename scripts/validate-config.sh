@@ -136,6 +136,60 @@ jq -r '.wikis | to_entries[] | .key' "$CONFIG_PATH" | while read -r wiki_key; do
   else
     echo -e "    ${YELLOW}[WARN]${NC} API not reachable at $API_URL (network or DNS issue)"
   fi
+
+  # ------------------------------------------------------------------
+  # 5. Authenticated rights check
+  # ------------------------------------------------------------------
+  # Reachability alone doesn't tell you whether the configured bot account can
+  # actually edit. This logs in with username/password and compares the
+  # account's rights against what editing this wiki requires, so a permission
+  # gap (e.g. Template namespace needing editinterface here, see
+  # rules/templates.md) shows up before an agent hits it mid-task.
+  if [ -n "$username" ] && [ -n "$password" ]; then
+    echo ""
+    echo "--- Step 5: Authenticated rights check for $wiki_key ---"
+
+    COOKIE_JAR="$(mktemp)"
+
+    LOGIN_TOKEN=$(curl -s -c "$COOKIE_JAR" --connect-timeout 5 \
+      "$API_URL?action=query&meta=tokens&type=login&format=json" \
+      | jq -r '.query.tokens.logintoken // empty')
+
+    if [ -z "$LOGIN_TOKEN" ]; then
+      echo -e "    ${YELLOW}[WARN]${NC} Could not fetch a login token; skipping rights check"
+    else
+      LOGIN_RESULT=$(curl -s -b "$COOKIE_JAR" -c "$COOKIE_JAR" --connect-timeout 5 \
+        --data-urlencode "action=login" \
+        --data-urlencode "lgname=$username" \
+        --data-urlencode "lgpassword=$password" \
+        --data-urlencode "lgtoken=$LOGIN_TOKEN" \
+        --data-urlencode "format=json" \
+        "$API_URL" | jq -r '.login.result // "Failed"')
+
+      if [ "$LOGIN_RESULT" != "Success" ]; then
+        echo -e "    ${RED}[FAIL]${NC} Login failed ($LOGIN_RESULT) — check username/password in .env or config.json"
+      else
+        RIGHTS=$(curl -s -b "$COOKIE_JAR" --connect-timeout 5 \
+          "$API_URL?action=query&meta=userinfo&uiprop=rights&format=json" \
+          | jq -r '.query.userinfo.rights[]?')
+
+        echo -e "    ${GREEN}[PASS]${NC} Logged in as $username"
+
+        REQUIRED_RIGHTS=("edit" "createpage" "editinterface")
+        for right in "${REQUIRED_RIGHTS[@]}"; do
+          if echo "$RIGHTS" | grep -qx "$right"; then
+            echo -e "    ${GREEN}[PASS]${NC} Has right: $right"
+          else
+            echo -e "    ${YELLOW}[WARN]${NC} Missing right: $right (editinterface is required to edit Template: pages on this wiki)"
+          fi
+        done
+      fi
+    fi
+    rm -f "$COOKIE_JAR"
+  else
+    echo ""
+    echo -e "    ${YELLOW}[WARN]${NC} No username/password configured — skipping authenticated rights check (Step 5)"
+  fi
 done
 
 # ------------------------------------------------------------------

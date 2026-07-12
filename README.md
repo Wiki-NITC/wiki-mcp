@@ -73,9 +73,16 @@ Reading works out of the box. To **create or edit pages**:
 1. Create a bot password at
    [`Special:BotPasswords`](https://wiki.fosscell.org/Special:BotPasswords) (ask the
    FOSS Cell team if you need an account).
-2. Open `config.json` (created automatically on first run) and fill in `username`
-   and `password`.
+2. Copy `.env.example` to `.env` and fill in `BOT_USERNAME` and `BOT_PASSWORD`.
+   `start-mcp.sh` reads `.env` and writes the credentials into `config.json` for
+   you (requires `jq`; install it if the script warns it's missing). You can
+   still edit `config.json` directly instead if you prefer.
 3. Restart your client.
+
+Rotating the bot password later (e.g. after regenerating it in
+`Special:BotPasswords`) only needs step 2 and 3 repeated — edit `.env`, restart
+your client. See [docs/rotating-credentials.md](docs/rotating-credentials.md)
+for why a restart is required and the full rotation runbook.
 
 > **File uploads are off in this beta.** Agents can create and edit text pages but
 > cannot upload files yet. This is intentional and will be enabled later.

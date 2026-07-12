@@ -89,6 +89,13 @@ CS1/Citation modules are **not yet imported** (it's an open task). Until then:
 Templates are the wiki's structured-data backbone and live in a protected
 namespace. Treat them as code:
 
+> **Permission note:** this wiki protects the `Template:` namespace with the
+> `editinterface` right specifically — not the more common `editprotected` or
+> `sysop`. If an edit fails with `protectednamespace`, check
+> `Special:ListGroupRights` for which right the Template row actually
+> requires, rather than assuming it's `editprotected`. `scripts/validate-config.sh`
+> checks for `editinterface` on the configured bot account ahead of time.
+
 1. **Reuse first.** Check for an existing template before making a new one.
 2. **Do not edit a live template** that pages depend on without human review —
    a bad edit can break every page that transcludes it (and its Cargo table).

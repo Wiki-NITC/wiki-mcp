@@ -2,6 +2,31 @@
 
 All notable changes to this repo are documented here.
 
+## [Unreleased]
+
+### Changed
+- **Bumped the pinned upstream server** from `0.10.0` to `0.12.0` in
+  `scripts/start-mcp.sh`, matching the version actually in use (which was
+  drifting from the documented pin since the live Claude Desktop config
+  called `@latest` directly, bypassing this script).
+- **`.env` credentials now actually take effect.** `start-mcp.sh` previously
+  sourced `.env` but never used the resulting variables. It now writes
+  `BOT_USERNAME`/`BOT_PASSWORD` from `.env` into `config.json` (requires
+  `jq`), so `.env` is the one place to update on a bot-password rotation.
+  See `.env.example` and the updated "Editing the wiki" section in
+  `README.md`.
+
+### Added
+- **`validate-config.sh` Step 5: authenticated rights check.** When
+  username/password are configured, the script now logs in and compares the
+  account's rights against what editing requires (`edit`, `createpage`,
+  `editinterface`), surfacing a permission gap before an agent hits it
+  mid-task instead of after.
+- **`docs/rotating-credentials.md`** — the bot-password rotation runbook,
+  including why a full client restart is required.
+- **`rules/templates.md`** now documents that this wiki protects `Template:`
+  pages with `editinterface`, not the more common `editprotected`/`sysop`.
+
 ## [0.1.0-beta] — 2026-06-09
 
 First beta. The repo now works against the live wiki out of the box.

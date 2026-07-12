@@ -8,7 +8,7 @@ set -euo pipefail
 
 # Pin the upstream server so every beta tester runs the same version.
 # To upgrade, bump this and update CHANGELOG.md.
-MCP_VERSION="0.10.0"
+MCP_VERSION="0.12.0"
 
 if ! command -v npx &> /dev/null; then
   echo "Node.js is required (version 22.12 or newer)." >&2
@@ -47,6 +47,23 @@ if [ ! -f config.json ]; then
   }
 }
 EOF
+fi
+
+# If .env supplied BOT_USERNAME/BOT_PASSWORD, sync them into config.json so
+# .env is the single place to update on a bot-password rotation, instead of
+# hand-editing JSON. Requires jq (already a dependency of validate-config.sh).
+if [ -n "${BOT_USERNAME:-}" ] && [ -n "${BOT_PASSWORD:-}" ]; then
+  if ! command -v jq &> /dev/null; then
+    echo "Warning: BOT_USERNAME/BOT_PASSWORD set in .env but jq is not installed," >&2
+    echo "so they could not be applied to config.json. Install jq or set" >&2
+    echo "username/password directly in config.json instead." >&2
+  else
+    TMP_CONFIG="$(mktemp)"
+    jq --arg u "$BOT_USERNAME" --arg p "$BOT_PASSWORD" \
+      '.wikis["wiki.fosscell.org"].username = $u | .wikis["wiki.fosscell.org"].password = $p' \
+      config.json > "$TMP_CONFIG"
+    mv "$TMP_CONFIG" config.json
+  fi
 fi
 
 export CONFIG="$PWD/config.json"
