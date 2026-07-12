@@ -1,0 +1,139 @@
+#!/usr/bin/env node
+// start-mcp.js - Launches the MediaWiki MCP server pointed at the NITC Wiki.
+//
+// Single cross-platform launcher (Windows, macOS, Linux). On first run this
+// creates a credential-less config.json so that *reading* the wiki works with
+// no setup. Put BOT_USERNAME/BOT_PASSWORD in .env to enable editing; they are
+// synced into config.json on every launch. See README.md.
+//
+// IMPORTANT: stdout is the MCP stdio channel. Never print to stdout here -
+// all launcher output goes to stderr.
+
+"use strict";
+
+const fs = require("fs");
+const path = require("path");
+const { spawn } = require("child_process");
+
+// Pin the upstream server so every user runs the same version.
+// To upgrade, bump this and update CHANGELOG.md.
+const MCP_VERSION = "0.12.0";
+
+const DEFAULT_WIKI = "wiki.fosscell.org";
+
+const repoRoot = path.resolve(__dirname, "..");
+const configPath = path.join(repoRoot, "config.json");
+const envPath = path.join(repoRoot, ".env");
+
+function log(msg) {
+  process.stderr.write(`[start-mcp] ${msg}\n`);
+}
+
+// --- Node version soft check -------------------------------------------------
+const nodeMajor = parseInt(process.versions.node.split(".")[0], 10);
+if (nodeMajor < 22) {
+  log(`Warning: Node ${process.versions.node} detected. The server needs Node 22.12+.`);
+  log("If startup fails, upgrade Node from https://nodejs.org");
+}
+
+// --- Bootstrap config.json on first run --------------------------------------
+// This shape must stay byte-compatible with config.example.json and with what
+// scripts/validate-config.js checks.
+const defaultConfig = {
+  defaultWiki: DEFAULT_WIKI,
+  wikis: {
+    [DEFAULT_WIKI]: {
+      sitename: "WIKI FOSSCELL NITC",
+      server: "https://wiki.fosscell.org",
+      articlepath: "/",
+      scriptpath: "",
+      username: null,
+      password: null,
+      private: false,
+      readOnly: false,
+    },
+  },
+};
+
+if (!fs.existsSync(configPath)) {
+  fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2) + "\n");
+  log("Created config.json (read-only access). Add credentials via .env to enable editing.");
+}
+
+// --- Sync .env credentials into config.json ----------------------------------
+// .env is the single place to update on a bot-password rotation. It WINS over
+// hand-edited config.json credentials; a notice is printed when it overwrites
+// a differing value.
+function parseEnvFile(file) {
+  const vars = {};
+  for (const rawLine of fs.readFileSync(file, "utf8").split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith("#")) continue;
+    const eq = line.indexOf("=");
+    if (eq === -1) continue;
+    const key = line.slice(0, eq).trim();
+    let value = line.slice(eq + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    vars[key] = value;
+  }
+  return vars;
+}
+
+if (fs.existsSync(envPath)) {
+  const env = parseEnvFile(envPath);
+  if (env.BOT_USERNAME && env.BOT_PASSWORD) {
+    let config;
+    try {
+      config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+    } catch (err) {
+      log(`Error: config.json is not valid JSON (${err.message}).`);
+      log("Fix or delete config.json (it will be recreated), then retry.");
+      process.exit(1);
+    }
+    const wikiKey = config.defaultWiki || DEFAULT_WIKI;
+    const wiki = (config.wikis && config.wikis[wikiKey]) || null;
+    if (!wiki) {
+      log(`Error: config.json has no wikis["${wikiKey}"] entry to hold credentials.`);
+      process.exit(1);
+    }
+    const changed = wiki.username !== env.BOT_USERNAME || wiki.password !== env.BOT_PASSWORD;
+    if (changed) {
+      if (wiki.username && wiki.username !== env.BOT_USERNAME) {
+        log(`Note: .env BOT_USERNAME overrides the differing username in config.json (.env wins).`);
+      }
+      wiki.username = env.BOT_USERNAME;
+      wiki.password = env.BOT_PASSWORD;
+      // Write via temp file + rename so a crash never leaves half a config.
+      const tmpPath = configPath + ".tmp";
+      fs.writeFileSync(tmpPath, JSON.stringify(config, null, 2) + "\n");
+      fs.renameSync(tmpPath, configPath);
+      log("Synced credentials from .env into config.json.");
+    }
+  }
+}
+
+// --- Launch the pinned upstream server ----------------------------------------
+const args = ["-y", `@professional-wiki/mediawiki-mcp-server@${MCP_VERSION}`, ...process.argv.slice(2)];
+
+const child = spawn("npx", args, {
+  cwd: repoRoot,
+  env: { ...process.env, CONFIG: configPath },
+  stdio: "inherit",
+  // npx is npx.cmd on Windows; shell resolves it on every platform.
+  shell: process.platform === "win32",
+});
+
+child.on("error", (err) => {
+  log(`Failed to launch the MCP server: ${err.message}`);
+  log("Is Node.js (22.12+) installed and npx on the PATH? https://nodejs.org");
+  process.exit(1);
+});
+
+child.on("exit", (code, signal) => {
+  process.exit(signal ? 1 : code == null ? 1 : code);
+});
