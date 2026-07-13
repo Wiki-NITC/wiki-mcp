@@ -2,6 +2,49 @@
 
 All notable changes to this repo are documented here.
 
+## [0.2.3] — 2026-07-14
+
+Full verification pass: validators, launcher, self-updater, every rules/skill
+cross-reference, and live wiki state re-checked end to end.
+
+### Fixed
+- **Username-to-`assignee` matching was silently broken.** Every documented
+  technique built a `LIKE '%username%'` pattern from the literal wiki
+  username. Confirmed live: account `JayJayTee` has 7 active tasks, but the
+  board records them under `Jay_Jay_Tee` (underscores inserted between
+  words - not a space/underscore swap of the same string), so the
+  documented query returned zero rows for a real, active user. Cargo's
+  `LIKE` cannot normalize this at query time. New canonical technique in
+  `rules/agent-conventions.md` (§6): pull the small set of active tasks
+  unfiltered by assignee, then normalize both sides (strip
+  spaces/underscores/hyphens, lowercase, split multi-assignee commas)
+  before comparing client-side. Applied to `onboarding`, `wiki-task-board`,
+  `weekly-update-reporter`, and `eod-status-report`.
+- `AGENTS.md` routing table was missing the `eod-status-report` skill.
+- Skill count corrected 19 → 20 (README.md and the live
+  `WIKI FOSSCELL NITC:MCP Rules` wiki page both still said 19).
+- Five stale `rules/agent-conventions.md §7` references (the new §6 shifted
+  the old §7 "Cargo templates are admin-only" to §8) fixed across four
+  skills and `AGENTS.md`.
+- `.env.example` referenced `start-mcp.sh` as the credential reader; it's
+  actually `start-mcp.js` (the wrapper just delegates to it).
+
+### Verified
+- Both validators (`.sh` and `.ps1`) pass identically against the live wiki,
+  including a fresh negative test (missing field correctly fails, exit 1).
+- Launcher handshake smoke-tested again: instructions injected, stdout
+  framing clean, tools discovered.
+- Self-updater's dirty-tree check: real tracked-file edits still block
+  auto-update; untracked scratch files still don't (confirms the #38 fix
+  holds).
+- `config.example.json` is byte-identical in shape to the launcher's
+  generated default.
+- Live board: one task had `category=projects` (not a valid taxonomy
+  value) - normalized to `app-dev`. One task's `assignee` has no matching
+  `User:` page - flagged for human review rather than guessed at.
+- No secrets tracked in git; `config.json` and `.env` both gitignored and
+  absent from the tree.
+
 ## [0.2.2] — 2026-07-13
 
 ### Added
