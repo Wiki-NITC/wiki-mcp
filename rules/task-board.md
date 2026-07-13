@@ -80,7 +80,9 @@ Only these values are valid. Do not invent variants (`templates`, `infra`,
 `content`, `brand`, `outreach`, `documentation`, and `Policy_team` have all
 appeared on the board and had to be normalized away — the parenthetical
 notes above show where each maps). No spaces after commas in
-multi-category lists (`a,b`, not `a, b` — the space breaks `HOLDS` queries).
+multi-category lists (`a,b`, not `a, b` — the space breaks category matching
+in queries). Note: `category` is a plain String field, so query it with
+`LIKE "%value%"`, never `HOLDS` (see `rules/structured-data.md`).
 
 **Exception:** onboarding tasks (`Onboard <Name>`, `Hello <Name>`) carry
 **no** team category — leave `category` empty. Onboarding is people work,
@@ -152,7 +154,7 @@ Team affiliations are tracked as **categories on user pages**:
 
 Query members of a team:
 `get-category-members("Template Admins")` or
-`{{#cargo_query:tables=WikiTasks|fields=assignee|where=category HOLDS "template-admins" AND status="open"|format=ul}}`
+`{{#cargo_query:tables=WikiTasks|fields=assignee|where=category LIKE "%template-admins%" AND status="open"|format=ul}}`
 
 Role categories are Title Case, plural, matching wiki convention.
 

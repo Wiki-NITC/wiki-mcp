@@ -34,7 +34,7 @@ parse-wikitext(wikitext="{{#cargo_query:tables=WikiTasks
 ```
 parse-wikitext(wikitext="{{#cargo_query:tables=WikiTasks
 |fields=_pageName,task_title,priority,category
-|where=status='open' AND assignee=''
+|where=status="open" AND assignee=""
 |order by=priority
 |format=ul}}")
 ```
@@ -44,7 +44,7 @@ parse-wikitext(wikitext="{{#cargo_query:tables=WikiTasks
 ```
 parse-wikitext(wikitext="{{#cargo_query:tables=WikiTasks
 |fields=_pageName,task_title,assignee,status
-|where=category HOLDS 'template-admins' AND status='open'
+|where=category LIKE "%template-admins%" AND status="open"
 |format=ul}}")
 ```
 
@@ -206,7 +206,7 @@ Only these values — no invented variants, and no spaces after commas in
 multi-category lists (see `rules/task-board.md` §4).
 
 Query unclaimed tasks for a team:
-`category HOLDS 'template-admins' AND assignee=''`
+`category LIKE "%template-admins%" AND assignee=""`
 
 User roles are tracked as categories on user pages, not in the task system.
 To find members of a team:

@@ -139,7 +139,7 @@ Match their roster role to a board category and query unclaimed work:
 ```
 {{#cargo_query:tables=WikiTasks
 |fields=_pageName,task_title,priority,created_date
-|where=category HOLDS '<category>' AND assignee='' AND status='open'
+|where=category LIKE "%<category>%" AND assignee="" AND status="open"
 |order by=priority
 |format=table}}
 ```

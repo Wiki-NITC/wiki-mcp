@@ -72,9 +72,14 @@ parse-wikitext(wikitext="{{#cargo_query:tables=WikiTasks
 
 Notes that apply to every Cargo query on this wiki:
 
-- Use `HOLDS` / `HOLDS LIKE` for list-type fields, `LIKE '%kw%'` for substring
-  matches.
-- Cargo collapses NULL to empty string: `field=''` matches unset AND empty.
+- **Quote values with double quotes** inside `parse-wikitext`: a pair of
+  single quotes (`assignee=''`) is wikitext *italics* markup and gets eaten
+  before Cargo sees it, producing a baffling SQL error. Write
+  `assignee=""`.
+- `HOLDS` / `HOLDS LIKE` work **only on List-type fields**. `WikiTasks.category`
+  is a plain String (comma-separated by convention), so `HOLDS` fails on it —
+  use `category LIKE "%mcp-admins%"` instead.
+- Cargo collapses NULL to empty string: `field=""` matches unset AND empty.
 - Results are HTML — parse the table/list out of the response.
 - Use `cargo-list-tables` (when available) to discover live table names rather
   than relying on any hardcoded list; tables change as templates evolve.
