@@ -137,9 +137,13 @@ already in `.gitignore`.
 The goal: an agent touching this wiki has the house rules in context **every
 time, whichever client it connects from**. Three channels deliver that:
 
-1. **opencode (recommended): open this folder as your project.** opencode
-   auto-loads [`AGENTS.md`](AGENTS.md) (the file follows the cross-tool
-   AGENTS.md convention) and discovers the skills in
+1. **Work from this folder and your agent auto-loads the rulebook.**
+   [`AGENTS.md`](AGENTS.md) follows the cross-tool AGENTS.md standard, read
+   natively by opencode, Codex, Cursor, GitHub Copilot, Windsurf, Zed,
+   Jules, and 30+ other agents. Two clients use their own filename, so the
+   repo ships thin bridge files pointing at the same rulebook:
+   [`CLAUDE.md`](CLAUDE.md) (Claude Code) and [`GEMINI.md`](GEMINI.md)
+   (Gemini CLI). opencode additionally discovers the skills in
    [`.agents/skills/`](.agents/skills/) — full context, zero setup.
 2. **Any client, automatically: the launcher injects the rules into the MCP
    handshake.** `start-mcp.js` appends the NITC house-rules summary (and a
