@@ -203,16 +203,22 @@ free-form title instead of `WIKI FOSSCELL NITC:Meetings/YYYY-MM-DD` because
 the skill wasn't loaded; the page had to be moved).
 
 **Session start rule (mandatory, not a judgment call):** before answering
-the user's first message — even a plain greeting — call `whoami`. If it
-shows an authenticated user, run the `onboarding` skill in full: setup
-check (start onboarding immediately if incomplete; writes still need their
-confirmation), their open/overdue tasks, and recommended unclaimed tasks for
-their team — delivered as a compact dashboard opening your first reply, then
-proceed with their actual request. A first reply to an authenticated user
-that contains no dashboard is a rule violation. Anonymous sessions get no
-dashboard — but if they ask about contributing or a write fails with
-`authentication`, guide them through the account → bot password → `.env`
-funnel (the `onboarding` skill's Step 0).
+the user's first message — even a plain greeting — call the **MCP `whoami`
+tool**. If it shows an authenticated user, run the `onboarding` skill in
+full: setup check (start onboarding immediately if incomplete; writes still
+need their confirmation), their open/overdue tasks, and recommended
+unclaimed tasks for their team — delivered as a compact dashboard opening
+your first reply, then proceed with their actual request. A first reply to
+an authenticated user that contains no dashboard is a rule violation.
+**Never substitute a raw HTTP request for the `whoami` tool** — an
+unauthenticated `api.php` call reports anonymous even on a fully configured
+machine (a live Copilot session did exactly this and mislabeled the user).
+If the wiki MCP tools are not available in your session, say so and tell
+the user to register the server (see the setup guides) instead of
+improvising. Anonymous sessions get no dashboard — but if they ask about
+contributing or a write fails with `authentication`, guide them through
+the account → bot password → `.env` funnel (the `onboarding` skill's
+Step 0).
 
 | Task | Skill |
 |---|---|
