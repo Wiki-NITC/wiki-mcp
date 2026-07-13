@@ -238,6 +238,7 @@ Step 0).
 | Uncategorized/orphan page sweeps | `wiki-gardener` |
 | Recent-changes patrol | `recent-changes-patroller` |
 | Weekly standup update for a member | `weekly-update-reporter` |
+| Team-wide EOD/accountability status report | `eod-status-report` |
 | Repo docs vs live wiki drift check | `rules-drift-auditor` |
 
 If your client does not auto-load skills, read the relevant

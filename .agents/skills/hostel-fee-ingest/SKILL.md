@@ -143,7 +143,7 @@ get-page("Template:Hostel Fee Structure")
 ```
 
 If it is ever missing, do not create it — it declares a Cargo table, which
-agents never create (`rules/agent-conventions.md` §7). Hand the request to a
+agents never create (`rules/agent-conventions.md` §8). Hand the request to a
 wiki admin.
 
 Parameters:

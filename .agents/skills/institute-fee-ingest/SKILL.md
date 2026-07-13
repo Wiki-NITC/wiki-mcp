@@ -147,7 +147,7 @@ Verify `Template:Institute Fee Structure` exists before writing any fee data:
 
 If it does not exist: **do not create it yourself, and do not route it through
 the template-creator skill** — it declares a Cargo table (`{{#cargo_declare}}`),
-which agents never create (`rules/agent-conventions.md` §7; template-creator
+which agents never create (`rules/agent-conventions.md` §8; template-creator
 refuses Cargo templates by design). Instead, hand the exact wikitext below to
 a wiki admin and stop until it exists:
 
