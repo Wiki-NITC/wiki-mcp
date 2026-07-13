@@ -75,12 +75,20 @@ their onboarding (profile, Hello task, roster). Reading needs none of this
 ## Step 1 - Who are you
 
 1. `whoami` - the wiki username everything keys off.
-2. Find the current roster: `search-page-by-prefix(prefix="Wiki Admin Team/", namespace=4)`,
-   take the latest academic year, `get-page` it.
-3. Locate the user's `{{Cargo Organization Team Member}}` row (match the
-   `organization` field to the username, case-insensitively; spaces and
-   underscores are interchangeable). Note their `role` (team) and `branch`
-   (their written responsibilities, when filled).
+2. Find the current roster: `search-page-by-prefix(prefix="Wiki Admin Team/", namespace=4)`.
+   **Pick the numerically greatest academic year** (e.g. `2026-27` beats
+   `2024-25`) - NOT the first search result, which is alphabetical. Then
+   `get-page` it.
+3. Locate the user's `{{Cargo Organization Team Member}}` row by matching
+   the whoami username against each row's **`organization=` parameter** -
+   exact match, case-insensitive, spaces and underscores interchangeable.
+   Do NOT fuzzy-match against `name=` (that's a display name and routinely
+   differs from the username, e.g. `name=Joshua Jacob Thomas` but
+   `organization=JayJayTee`). Note their `role` (team) and `branch` (their
+   written responsibilities, when filled).
+4. Before concluding the user is missing from the roster, list the
+   `organization=` values you compared against - a wrong-year page or a
+   display-name mismatch is far more likely than a genuinely missing row.
 
 ## Step 2 - Onboarding audit
 
