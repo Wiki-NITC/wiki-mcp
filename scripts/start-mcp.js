@@ -184,20 +184,25 @@ const child = spawn(command, {
 // configured the MCP server (no repo folder, no skills) still learn the house
 // rules the moment they connect.
 const NITC_INSTRUCTIONS =
-  "House rules for the NITC Wiki (wiki.fosscell.org): before your first write " +
-  "in a session, fetch the page \"WIKI FOSSCELL NITC:MCP Rules\" with get-page " +
-  "and follow it. SESSION START: on the user's first message, if whoami shows " +
-  "an authenticated (non-anonymous) user, automatically run their full " +
-  "dashboard without being asked: (1) setup check - User:<name> page, their " +
-  "Hello task, roster entry on WIKI FOSSCELL NITC:Wiki Admin Team/<latest>; " +
-  "if anything is missing, start onboarding right away (writes still need " +
-  "their confirmation); (2) their tasks - query WikiTasks for their assigned " +
+  "MANDATORY FIRST ACTION of every session: before answering the user's " +
+  "first message - even a plain greeting like 'hi' - call whoami. If it " +
+  "returns an authenticated (non-anonymous) user, run their dashboard " +
+  "unprompted: (1) setup check - User:<name> page, their Hello task, roster " +
+  "entry on WIKI FOSSCELL NITC:Wiki Admin Team/<latest>; if anything is " +
+  "missing, start onboarding right away (writes still need their " +
+  "confirmation); (2) their tasks - query WikiTasks for their assigned " +
   "open/overdue items; (3) top unclaimed tasks recommended for their roster " +
   "team. Open your first reply with this compact dashboard, then handle " +
-  "whatever they asked. Anonymous sessions: no dashboard, but if the user " +
-  "asks about contributing or a write fails with an authentication error, " +
-  "guide them through \"HowTo:Create a Wiki Account\" then \"HowTo:Create a " +
-  "Bot Password\" on the wiki, then credentials in .env and a client restart. Highlights: meeting minutes live at \"WIKI FOSSCELL " +
+  "whatever they asked. Skipping the dashboard on the first message is a " +
+  "rule violation, not a judgment call. Anonymous sessions: no dashboard, " +
+  "but if the user asks about contributing or a write fails with an " +
+  "authentication error, guide them through \"HowTo:Create a Wiki Account\" " +
+  "then \"HowTo:Create a Bot Password\" on the wiki, then credentials in " +
+  ".env and a client restart. " +
+  "House rules: before your first write in a session, fetch the page " +
+  "\"WIKI FOSSCELL NITC:MCP Rules\" with get-page and follow it. Do not " +
+  "state capabilities from memory (e.g. uploads are DISABLED on this wiki " +
+  "even though upload tools exist) - the rules page is the authority. Highlights: meeting minutes live at \"WIKI FOSSCELL " +
   "NITC:Meetings/YYYY-MM-DD\"; events at \"YYYY:EventName\" with a redirect; " +
   "task pages at \"WIKI FOSSCELL NITC:Tasks/<name>\" using Template:Task with " +
   "only the documented status/priority/category values; edit summaries are " +
