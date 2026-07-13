@@ -13,7 +13,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { spawn } = require("child_process");
+const { spawn, execSync } = require("child_process");
 
 // Pin the upstream server so every user runs the same version.
 // To upgrade, bump this and update CHANGELOG.md.
@@ -35,6 +35,49 @@ if (nodeMajor < 22) {
   log(`Warning: Node ${process.versions.node} detected. The server needs Node 22.12+.`);
   log("If startup fails, upgrade Node from https://nodejs.org");
 }
+
+// --- Self-update check --------------------------------------------------------
+// Rules and skills only help if people run the current ones. On every launch,
+// fetch origin and fast-forward to origin/main when it is safe to do so
+// (git repo, on main, clean working tree). Anything else degrades to a
+// reminder on stderr. Never blocks or breaks startup: any failure (offline,
+// no git, ZIP download) is swallowed and the server starts as-is.
+function checkForUpdates() {
+  const run = (cmd, timeout = 10000) =>
+    execSync(cmd, { cwd: repoRoot, timeout, stdio: ["ignore", "pipe", "ignore"] })
+      .toString()
+      .trim();
+  try {
+    if (!fs.existsSync(path.join(repoRoot, ".git"))) return; // ZIP install, no git
+    execSync("git fetch --quiet origin main", {
+      cwd: repoRoot,
+      timeout: 15000,
+      stdio: "ignore",
+    });
+    const behind = parseInt(run("git rev-list --count HEAD..origin/main"), 10);
+    if (!behind) return;
+    const dirty = run("git status --porcelain") !== "";
+    const branch = run("git rev-parse --abbrev-ref HEAD");
+    if (dirty || branch !== "main") {
+      const reason = dirty ? "local changes present" : `on branch ${branch}`;
+      log(`Update available: ${behind} commit(s) behind origin/main (auto-update skipped: ${reason}). Run 'git pull' when convenient.`);
+      return;
+    }
+    try {
+      execSync("git merge --ff-only --quiet origin/main", {
+        cwd: repoRoot,
+        timeout: 10000,
+        stdio: "ignore",
+      });
+      log(`Auto-updated wiki-mcp: ${behind} new commit(s) from origin/main. Launcher changes take effect on the next restart.`);
+    } catch {
+      log(`Update available: ${behind} commit(s) behind origin/main, but history has diverged. Run 'git pull' manually.`);
+    }
+  } catch {
+    // Offline, git missing, or anything unexpected - never block startup.
+  }
+}
+checkForUpdates();
 
 // --- Bootstrap config.json on first run --------------------------------------
 // This shape must stay byte-compatible with config.example.json and with what

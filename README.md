@@ -23,6 +23,12 @@ we point it at our wiki and add guardrails.
 Reading the wiki needs **no account and no credentials**. Editing needs a bot
 password (see [Editing the wiki](#editing-the-wiki)).
 
+**Staying current:** if you cloned with git, the launcher checks for updates
+on every start and fast-forwards to `origin/main` automatically when it's
+safe (on `main`, no local changes) — otherwise it prints a `git pull`
+reminder. ZIP downloads can't self-update; re-download when updates are
+announced.
+
 ---
 
 ## Setup
