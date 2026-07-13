@@ -120,25 +120,48 @@ async function main() {
 
     const server = String(wiki.server).replace(/\/+$/, "");
     const scriptpath = String(wiki.scriptpath || "").replace(/\/+$/, "");
-    const apiUrl = `${server}${scriptpath}/api.php`;
 
+    // Try the configured scriptpath first, then fall back to root `/api.php`.
+    const candidates = [];
+    if (scriptpath) candidates.push(`${server}${scriptpath}/api.php`);
+    candidates.push(`${server}/api.php`);
+
+    let apiUrl = candidates[0];
     let siteinfoOk = false;
     try {
-      const res = await fetchWithTimeout(`${apiUrl}?action=query&meta=siteinfo&format=json`);
-      if (res.ok) {
-        const body = await res.json();
-        const remoteName = body && body.query && body.query.general && body.query.general.sitename;
-        pass(`API reachable at ${apiUrl} (HTTP ${res.status})`);
-        siteinfoOk = true;
-        if (remoteName && wiki.sitename && remoteName !== wiki.sitename) {
-          warn(`Remote sitename "${remoteName}" differs from configured "${wiki.sitename}"`);
-        } else if (remoteName) {
-          pass(`Remote sitename matches: ${remoteName}`);
+      for (const candidate of candidates) {
+        try {
+          const res = await fetchWithTimeout(`${candidate}?action=query&meta=siteinfo&format=json`);
+          if (res.ok) {
+            const body = await res.json();
+            const remoteName = body && body.query && body.query.general && body.query.general.sitename;
+            pass(`API reachable at ${candidate} (HTTP ${res.status})`);
+            apiUrl = candidate;
+            siteinfoOk = true;
+            if (remoteName && wiki.sitename && remoteName !== wiki.sitename) {
+              warn(`Remote sitename "${remoteName}" differs from configured "${wiki.sitename}"`);
+            } else if (remoteName) {
+              pass(`Remote sitename matches: ${remoteName}`);
+            }
+            break; // found a working endpoint
+          } else {
+            warn(`API returned HTTP ${res.status} at ${candidate}`);
+            // try next candidate
+          }
+        } catch (err) {
+          // Non-fatal here; try the next candidate. Record a brief info message.
+          info(`Could not reach ${candidate} (${err.name === "AbortError" ? "timeout" : err.message})`);
         }
-      } else {
-        fail(`API returned HTTP ${res.status} at ${apiUrl}`);
+      }
+
+      if (!siteinfoOk) {
+        fail(`API not reachable at any tested endpoint (${candidates.join(", ")})`);
+        info("A silent timeout can mean your IP is filtered at the wiki's proxy -");
+        info("check the wiki from another network (e.g. mobile data); if it loads");
+        info("there, contact a wiki admin about allowlisting your IP.");
       }
     } catch (err) {
+      // Shouldn't reach here, but keep the previous defensive message.
       fail(`API not reachable at ${apiUrl} (${err.name === "AbortError" ? "timeout" : err.message})`);
       info("A silent timeout can mean your IP is filtered at the wiki's proxy -");
       info("check the wiki from another network (e.g. mobile data); if it loads");
