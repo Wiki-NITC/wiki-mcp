@@ -127,19 +127,26 @@ If the Hello task exists with its checklist complete but status is still
 
 ## Step 3 - Your board
 
-Query the user's tasks (technique: `rules/structured-data.md`):
+**Do not filter by the literal username in SQL** - `assignee` values are
+hand-typed and can use a different separator convention than the real
+username (`rules/agent-conventions.md` §6; e.g. account `JayJayTee` shows
+up on task pages as `Jay_Jay_Tee` - a naive `LIKE` on the literal username
+finds zero rows for a person who has several active tasks). Pull the
+active board and normalize-compare client-side:
 
 ```
 {{#cargo_query:tables=WikiTasks
-|fields=_pageName,task_title,status,priority,deadline
-|where=assignee LIKE '%<username>%' AND status!='done' AND status!='cancelled'
+|fields=_pageName,task_title,status,priority,deadline,assignee
+|where=status!='done' AND status!='cancelled' AND assignee!=''
 |format=table}}
 ```
 
-(`assignee` is comma-separated - verify matches aren't substrings of someone
-else's name.) Present grouped: **in-progress** first, then **claimed**,
-**review** (waiting on others), **open** (assigned but not started). Flag
-anything with `deadline < <TODAY>` as **overdue** and suggest a new deadline
+For each row, strip spaces/underscores/hyphens and lowercase both the
+`assignee` value (split on `,` first - it can list multiple people) and
+the target username, then compare for equality. Present grouped:
+**in-progress** first, then **claimed**, **review** (waiting on others),
+**open** (assigned but not started). Flag anything with `deadline < <TODAY>`
+as **overdue** and suggest a new deadline
 or returning it to `open` (`rules/task-board.md` §8).
 
 ## Step 4 - What do you want to work on?

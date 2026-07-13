@@ -35,9 +35,12 @@ each `<tr>` row from the `|members=` value:
 
 - **Username** — wikilink target (`[[User:...]]`) or plain text.
 - **Team** — column 2 (MCP, Templates, App, PRC, Social Media, Video, or —).
-- Normalise username casing (the task board uses differing casing, e.g.
-  `C3tm` vs `c3tm`, or `H_R_Soorya_Dev` vs `h_r_soorya_dev`; spaces and
-  underscores are interchangeable). Match case-insensitively.
+- Normalise before matching: strip spaces/underscores/hyphens and lowercase
+  both the roster username and the task board's `assignee` value. The two
+  can differ by more than casing or a space/underscore swap - a real
+  example: account `JayJayTee` is recorded on task pages as `Jay_Jay_Tee`
+  (underscores inserted, no simple substitution gets you there). See
+  `rules/agent-conventions.md` §6 for the full technique.
 
 ### 2. Fetch active (non-done, non-cancelled) tasks
 

@@ -50,12 +50,22 @@ parse-wikitext(wikitext="{{#cargo_query:tables=WikiTasks
 
 ### Tasks assigned to a specific user
 
+**Don't filter by the literal username** - `assignee` is hand-typed and its
+separator convention can differ from the real username in ways beyond
+spaces/underscores swapping (e.g. `JayJayTee` appears on task pages as
+`Jay_Jay_Tee`; see `rules/agent-conventions.md` §6). Pull the active board
+and normalize-compare client-side instead of trusting a `LIKE` on the raw
+name:
+
 ```
 parse-wikitext(wikitext="{{#cargo_query:tables=WikiTasks
-|fields=_pageName,task_title,status,deadline
-|where=assignee='SomeUsername'
+|fields=_pageName,task_title,status,deadline,assignee
+|where=status!='done' AND status!='cancelled' AND assignee!=''
 |format=ul}}")
 ```
+
+Strip spaces/underscores/hyphens and lowercase both sides before comparing
+(split `assignee` on `,` first - it can list multiple people).
 
 ### Overdue tasks
 

@@ -15,8 +15,10 @@ is invented.
 ## Inputs
 
 - **Wiki username** — whose update to build. Default to the operator's own
-  account (`whoami`). Match case-insensitively; spaces and underscores are
-  interchangeable (`rules/agent-conventions.md` §5).
+  account (`whoami`). Match against `assignee` values by normalizing both
+  sides (strip spaces/underscores/hyphens, lowercase) rather than a literal
+  `LIKE` — the two can differ by more than a space/underscore swap
+  (`rules/agent-conventions.md` §6).
 - **Window** — defaults to the last 7 days, ending today (resolve today from
   your environment).
 
@@ -35,12 +37,13 @@ one line ("updated X, N revisions"). Note created pages (`isNew`) separately.
 
 ### 2. Task movement
 
-Current task state:
+Current task state — pull broadly and normalize-compare rather than
+filtering by the literal username:
 
 ```
 {{#cargo_query:tables=WikiTasks
-|fields=_pageName,task_title,status,priority,deadline
-|where=assignee LIKE '%<username>%'
+|fields=_pageName,task_title,status,priority,deadline,assignee
+|where=assignee!=''
 |format=table}}
 ```
 

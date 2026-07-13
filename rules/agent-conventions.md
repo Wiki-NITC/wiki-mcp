@@ -107,7 +107,41 @@ Team rosters live under `WIKI FOSSCELL NITC:Wiki Admin Team/<academic-year>`
 
 ---
 
-## 6. Known MCP server failure modes
+## 6. Matching a username against the WikiTasks `assignee` field
+
+**Do not build a `LIKE` pattern from the literal wiki username and trust it.**
+The `assignee` field is hand-typed and its separator convention can differ
+from the account's real username in ways that are *not* a simple space ↔
+underscore swap - a real, current example on this board: the account
+`JayJayTee` (no separators) is recorded on task pages as `Jay_Jay_Tee`
+(underscores inserted between words). A query like
+`assignee LIKE "%JayJayTee%"` silently returns **zero rows** even though
+the person has several active tasks. This is a false negative, not a
+"no tasks" result - never report someone has no tasks without ruling this
+out first.
+
+**The reliable technique:** don't try to out-guess the separator convention
+in SQL. Pull the small set of candidate rows and compare after normalizing
+both sides:
+
+1. Query broadly - e.g. all non-`done`, non-`cancelled` tasks with
+   `assignee!=""` (the whole active board is normally under ~150 rows, one
+   call, no pagination needed). Include `assignee` in the fields.
+2. For each row, **normalize** both the row's `assignee` value and the
+   target username the same way: strip all spaces, underscores, and
+   hyphens, then lowercase. `Jay_Jay_Tee` → `jayjaytee`; `JayJayTee` →
+   `jayjaytee`. They match.
+3. `assignee` can be comma-separated (multiple people) - split on `,` and
+   normalize each part before comparing.
+
+If the active-task count ever grows too large for one unfiltered pull, add
+a coarse SQL pre-filter on a short, distinctive substring (e.g. a surname
+fragment) before applying the same normalized comparison - never a full
+literal-username `LIKE`.
+
+---
+
+## 7. Known MCP server failure modes
 
 | Symptom | Cause | Fix |
 |---|---|---|
@@ -117,7 +151,7 @@ Team rosters live under `WIKI FOSSCELL NITC:Wiki Admin Team/<academic-year>`
 
 ---
 
-## 7. Cargo templates are admin-only
+## 8. Cargo templates are admin-only
 
 Agents never create or edit templates containing `{{#cargo_declare}}` or
 `{{#cargo_store}}`. Schema changes require a Cargo table rebuild that only

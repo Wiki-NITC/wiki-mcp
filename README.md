@@ -51,7 +51,7 @@ everything:
 - [`opencode.json`](opencode.json) auto-starts the MCP server — no config.
 - [`AGENTS.md`](AGENTS.md) (the master rulebook, with the task-to-skill
   routing table) loads into your agent automatically.
-- The 19 workflow skills in [`.agents/skills/`](.agents/skills/) become
+- The 20 workflow skills in [`.agents/skills/`](.agents/skills/) become
   available — meeting minutes, task board, event pages, magazine, audits.
 
 Then just ask about the wiki. This is the fullest-context way to run an
