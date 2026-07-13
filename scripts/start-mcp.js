@@ -56,7 +56,10 @@ function checkForUpdates() {
     });
     const behind = parseInt(run("git rev-list --count HEAD..origin/main"), 10);
     if (!behind) return;
-    const dirty = run("git status --porcelain") !== "";
+    // Untracked files don't block a fast-forward merge - only count
+    // modifications to tracked files as dirty, or a stray scratch file
+    // would silently pin someone to an old version forever.
+    const dirty = run("git status --porcelain --untracked-files=no") !== "";
     const branch = run("git rev-parse --abbrev-ref HEAD");
     if (dirty || branch !== "main") {
       const reason = dirty ? "local changes present" : `on branch ${branch}`;
