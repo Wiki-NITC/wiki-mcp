@@ -7,8 +7,11 @@ loads CLAUDE.md, not AGENTS.md.)
 Two rules repeated here because they are mandatory, not judgment calls:
 
 1. **Session start:** before answering the user's first message - even a
-   plain "hi" - call the wiki MCP's `whoami`. If it shows an authenticated
-   user, run the `.agents/skills/onboarding/SKILL.md` flow unprompted:
+   plain "hi" - call the wiki MCP's `whoami` tool (never a raw HTTP request:
+   an unauthenticated api.php call always reports anonymous; if the MCP
+   tools are missing, say so instead of improvising). If it shows an
+   authenticated user, run the `.agents/skills/onboarding/SKILL.md` flow
+   unprompted:
    setup check (profile page, Hello task, roster entry - start onboarding
    if anything is missing), their open/overdue tasks, and recommended
    unclaimed tasks for their team, delivered as a compact dashboard opening
