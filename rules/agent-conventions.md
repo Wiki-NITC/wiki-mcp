@@ -96,8 +96,12 @@ Team rosters live under `WIKI FOSSCELL NITC:Wiki Admin Team/<academic-year>`
 (e.g. `.../2026-27`). Never hardcode the year:
 
 1. `search-page-by-prefix(prefix="Wiki Admin Team/", namespace=4)`
-2. Pick the latest academic year from the results.
-3. Match display names to wiki usernames case-insensitively, and treat
+2. Pick the **numerically greatest** academic year from the results (not
+   the first result - that ordering is alphabetical).
+3. The title may be a redirect to the real roster (currently
+   `2026:WIKINITC/Team`). `get-page` follows redirects; a raw fetch that
+   returns a one-line `#REDIRECT [[Target]]` means fetch the target.
+4. Match display names to wiki usernames case-insensitively, and treat
    spaces and underscores as interchangeable (`H R Soorya Dev` =
    `H_R_Soorya_Dev`).
 

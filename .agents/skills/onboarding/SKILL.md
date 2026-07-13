@@ -79,6 +79,11 @@ their onboarding (profile, Hello task, roster). Reading needs none of this
    **Pick the numerically greatest academic year** (e.g. `2026-27` beats
    `2024-25`) - NOT the first search result, which is alphabetical. Then
    `get-page` it.
+   **Redirects:** the roster title may be a redirect (it currently points at
+   `2026:WIKINITC/Team`). The MCP `get-page` follows redirects transparently;
+   but if you ever see a bare `#REDIRECT [[Target]]` as the page source
+   (e.g. via a raw fetch), fetch the target - zero member rows on a
+   one-line page means you are looking at the redirect, not the roster.
 3. Locate the user's `{{Cargo Organization Team Member}}` row by matching
    the whoami username against each row's **`organization=` parameter** -
    exact match, case-insensitive, spaces and underscores interchangeable.
