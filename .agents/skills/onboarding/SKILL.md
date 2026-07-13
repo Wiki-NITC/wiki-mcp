@@ -100,6 +100,22 @@ their onboarding (profile, Hello task, roster). Reading needs none of this
 Check these three, in order. For anything missing, propose the fix and get
 human confirmation before creating anything (`AGENTS.md` §8).
 
+**Evidence rule: a fact goes on the dashboard only if a tool call in THIS
+session showed it.** "Profile missing" requires `get-page("User:<name>")`
+returning not_found - an unticked checkbox on their Hello task is NOT
+evidence (checklists go stale; a real incident: an agent told a user their
+profile was missing when it had existed for a week, because it trusted the
+checklist instead of checking).
+
+**Speed: batch your reads.** The whole audit fits in ~4 tool calls, not 10:
+- One `get-pages` call for `User:<name>` + `WIKI FOSSCELL NITC:Tasks/Hello <Name>`
+  + the roster page together.
+- One `parse-wikitext` call carrying BOTH Cargo queries (your-tasks and
+  team recommendations) - multiple `{{#cargo_query:}}` blocks concatenated
+  in the same wikitext render in a single call.
+On slow models this is the difference between a 1-minute and a 5-minute
+dashboard.
+
 | Check | How | Fix if missing |
 |---|---|---|
 | Profile page | `get-page("User:<username>")` transcludes `{{User Profile}}`? | Create it following the `first-contribution` skill (read `Template:User Profile` for current fields) |
