@@ -2,6 +2,16 @@
 
 All notable changes to this repo are documented here.
 
+## [0.2.2] — 2026-07-13
+
+### Added
+- **Launcher self-update.** On every start, `start-mcp.js` fetches origin and
+  fast-forwards to `origin/main` when it is safe (git clone, on `main`, clean
+  working tree). Otherwise it prints a "run git pull" reminder to stderr.
+  Offline, ZIP installs, and any git failure are silently tolerated — the
+  server always starts. Updated launcher code takes effect on the next
+  restart.
+
 ## [0.2.1] — 2026-07-13
 
 Agents now get the house rules in context on every connection, from any
