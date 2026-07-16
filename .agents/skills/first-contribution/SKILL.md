@@ -9,6 +9,13 @@ Use this skill when helping a **new contributor** get started on
 `wiki.fosscell.org`. The goal is to get them from zero to one saved edit,
 correctly placed, in one sitting.
 
+> The `onboarding` skill now runs automatically at session start and
+> already handles profile-page creation, the Hello task, and roster
+> registration (and offers a teach-by-doing task-board walkthrough). Use
+> **this** skill specifically for the "which first CONTENT" decision -
+> magazine submission, blog post, or open-ended page edit - when someone
+> wants to write something rather than claim a board task.
+
 ---
 
 ## Step 0: account and identity

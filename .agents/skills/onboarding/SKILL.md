@@ -1,6 +1,6 @@
 ---
 name: onboarding
-description: "Personal onboarding and work dashboard for NITC Wiki team members. Runs PROACTIVELY at the start of every session for authenticated users: checks whether they are fully onboarded (profile page, Hello task, roster entry), offers to fix gaps, and opens with a short status of their open and overdue tasks before assisting with their actual request. Also triggers on demand: onboard me, what are my tasks, what should I work on next."
+description: "Personal onboarding and work dashboard for NITC Wiki team members. Runs PROACTIVELY at the start of every session for authenticated users: checks whether they are fully onboarded (profile page, Hello task, roster entry), offers to fix gaps, and opens with a short status of their open and overdue tasks before assisting with their actual request. For genuinely first-time users, offers a narrated teach-by-doing walkthrough of claiming and finishing a real task - so the agent itself teaches task management, page creation, and template usage instead of a human. Also triggers on demand: onboard me, what are my tasks, what should I work on next, help me pick and finish my first task."
 ---
 
 # Onboarding & Personal Dashboard
@@ -43,6 +43,8 @@ asks for this — it self-initiates on their first message:
 - **If setup is incomplete, begin onboarding immediately** — present what's
   missing and the proposed fixes. Page creations still require their
   confirmation (Review Protocol), but the initiative is yours, not theirs.
+  If this was a from-scratch onboarding (everything was missing), offer
+  Step 7's teach-by-doing walkthrough once setup is done.
 - Only Step 6 (claiming a task) waits for the user to choose — never
   auto-claim.
 
@@ -71,6 +73,12 @@ write and gets an `authentication` error. Turn the dead end into onboarding
 Tell them: next session, this skill takes over automatically and finishes
 their onboarding (profile, Hello task, roster). Reading needs none of this
 — never push the funnel on someone who just wants to browse.
+
+The full human-readable version of this same walkthrough (including
+picking and installing an agent app in the first place, and the wiki's
+bot-protection browser extension) lives on the wiki at
+[[HowTo:Onboard Admin]] - point people there if they'd rather read than
+be walked through it live.
 
 ## Step 1 - Who are you
 
@@ -155,6 +163,11 @@ Ask. If they name something specific, search the board for related existing
 tasks first (keyword `LIKE` queries, per the meeting-processor dedup pattern)
 - claim or continue an existing task rather than creating a duplicate.
 
+If they'd rather **write something** than claim a task (a magazine piece,
+a blog post, or an open-ended page edit), hand off to the
+`first-contribution` skill's first-post routing instead of forcing them
+toward the task board.
+
 ## Step 5 - Recommendations
 
 Match their roster role to a board category and query unclaimed work:
@@ -189,6 +202,44 @@ category has nothing open, widen to all unassigned open tasks and say so.
 For whatever they pick, follow the `wiki-task-board` skill: set assignee +
 `status=claimed`, save with `latestId` and summary `Bot: Claim task - <agent>`.
 
+## Step 7 - Teach by doing (brand-new users only)
+
+**Trigger:** Step 2 just created the profile page, Hello task, AND roster
+row for this person in this session (i.e. they were missing all three -
+this is a genuinely first-ever session, not an existing member with one
+gap). Also trigger on the explicit phrase "help me pick and finish my
+first task" or similar, from anyone.
+
+This is the automation behind "opencode onboards new members instead of a
+senior having to walk them through it by hand" - the point is to *show*
+task management, page editing, and template usage live, narrated, not just
+describe it.
+
+1. **Pick a safe practice task.** Prefer `priority=low` or `medium`, no
+   near-term `deadline`, and a scope you can realistically finish in one
+   sitting (a category fix, a small content addition, filling in a missing
+   template field) over anything `high`/`critical` or deadline-pressured -
+   a beginner's first live edit should not carry real stakes. If nothing
+   suitable is open, offer a harmless standalone practice rep instead:
+   adding a category to one genuinely uncategorized page, or expanding
+   their own profile page.
+2. **Claim it together**, narrating each step as you do it (per Step 6) -
+   "I'm setting status to claimed and assigning it to you, here's the
+   edit summary format we use..."
+3. **Walk the actual work**, narrating the mechanics as they happen: read
+   the page first, why you're using this specific template/infobox
+   (`rules/page-types.md` recipe for the type), why the category needs to
+   exist first, why you preview with `parse-wikitext` before saving
+   (`rules/agent-conventions.md` §2), why you pass `latestId`. The
+   narration IS the lesson - a new member who watches one real edit happen
+   correctly understands the conventions faster than reading `rules/`.
+4. **Finish it together** - move to `review` or `done` per the normal
+   lifecycle, and point out where the task-to-skill routing table in
+   `AGENTS.md` lives for next time they need a different workflow.
+5. Offer, don't force: if they'd rather just watch you do the dashboard
+   and explore on their own, that's fine - this step is a teaching option,
+   not a requirement.
+
 ---
 
 ## Guardrails
@@ -202,9 +253,12 @@ For whatever they pick, follow the `wiki-task-board` skill: set assignee +
 
 ## Authoritative references
 
+- `HowTo:Onboard Admin` on the live wiki - the human-readable version of
+  this same curriculum, including agent/extension setup before MCP.
 - `WIKI FOSSCELL NITC:Wiki Admin Team/<year>` on the live wiki - roster and
   responsibilities (the `role` and `branch` fields).
-- `.agents/skills/first-contribution` - profile page mechanics.
+- `.agents/skills/first-contribution` - choosing a first CONTENT
+  contribution (magazine/blog/edit) rather than a task-board task.
 - `.agents/skills/wiki-task-board` - claiming and task operations.
 - `.agents/skills/board-janitor` - the Task Board team's home turf.
 - `rules/task-board.md` - lifecycle, categories, overdue rules.
