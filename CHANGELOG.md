@@ -2,6 +2,46 @@
 
 All notable changes to this repo are documented here.
 
+## [0.2.4] — 2026-07-16
+
+New member curriculum, agreed with the team lead: what the wiki is about,
+setting up an agent, MCP, the bot-protection extension, the task board and
+admin team, and making a first edit - plus automating as much of it as
+possible so a senior doesn't have to walk each person through it by hand.
+
+### Added
+- **`HowTo:Install Wiki Access Extension`** (new wiki page) - the
+  bot-protection browser extension referenced by every Hello task
+  checklist ("confirm extension installation...") had zero documentation
+  anywhere on the wiki until now. Covers Firefox/Chrome/Edge/Brave/Kiwi
+  install steps and explains the Anubis proof-of-work puzzle it skips.
+  Confirmed this only affects browser visits, not MCP/agent traffic.
+- **`HowTo:Setting Up Your Agent`** (new wiki page) - the "which app do I
+  even install" step that was missing before `HowTo:SetupMCP` (which
+  starts from "you already picked one"). Recommends opencode and explains
+  why, with install links for all four supported clients.
+- **`onboarding` skill Step 7: teach-by-doing.** For a genuinely first-ever
+  session (profile, Hello task, and roster row all created in this
+  session) or on request, the agent picks a safe low-stakes task, claims
+  and finishes it together with the user, narrating the task-board and
+  editing mechanics live. This is the actual automation behind "opencode
+  onboards new members instead of a person having to."
+
+### Changed
+- **`HowTo:Onboard Admin` restructured and deduplicated.** Slotted in the
+  new agent-picker and extension steps in curriculum order (account →
+  agent → MCP → extension → role → task board/admin team → conventions →
+  first edit → stay in touch). Also removed a pre-existing duplicate
+  content block (the page had both the `{{HowTo}}` template call and a
+  second literal copy of the same sections) - now matches every other
+  HowTo page's single-template-call convention.
+- **`first-contribution` skill's scope narrowed and clarified** against
+  the new `onboarding` skill: `onboarding` now owns automatic setup
+  (profile/Hello/roster) and the task-board walkthrough;
+  `first-contribution` owns the "which first CONTENT" decision
+  (magazine/blog/edit) when someone wants to write something instead of
+  claiming a task. `AGENTS.md`'s routing table updated to match.
+
 ## [0.2.3] — 2026-07-14
 
 Full verification pass: validators, launcher, self-updater, every rules/skill

@@ -223,14 +223,14 @@ Step 0).
 | Task | Skill |
 |---|---|
 | Any read/edit on this wiki (start here) | `nitc-wiki-editing` |
-| Session start (automatic) / "onboard me" / "what are my tasks" | `onboarding` |
+| Session start (automatic) / "onboard me" / "what are my tasks" / first-ever session (teach-by-doing) | `onboarding` |
 | Meeting transcript → minutes + tasks | `meeting-processor` |
 | Task board: find/claim/create/update tasks | `wiki-task-board` |
 | Task board cleanup / health report | `board-janitor` |
 | Event or fest edition pages | `event-page-creator` |
 | Home team pages | `nitc-wiki-home-teams` |
 | Magazine entries or MagCom archiving | `magazine-submission` |
-| New contributor onboarding | `first-contribution` |
+| Choosing a first CONTENT contribution (magazine/blog/edit) | `first-contribution` |
 | Fee/bus PDF ingestion | `hostel-fee-ingest` / `institute-fee-ingest` / `bus-timings-ingest` |
 | New (non-Cargo) templates | `template-creator` |
 | Cargo data audits | `cargo-auditor` |
