@@ -92,10 +92,20 @@ and leave every year. The roster page is the live source.
 
 **Title:** `WIKI FOSSCELL NITC:Meetings/YYYY-MM-DD`
 
-**Before creating, check if page already exists:**
+**Before creating, check if page already exists** (same-day collision -
+two meetings in one day):
 1. Call `get-page` with the proposed title.
-2. If the page exists, append `-2`, `-3`, etc. until the title is free.
-3. Record the resolved title for Step 7.
+2. If the page exists, **do not use a bare numeric suffix** (`-2`, `-3`) -
+   it's indistinguishable from a glance which meeting is which. Instead
+   append a short topic/team slug derived from the transcript's subject or
+   attendee team, matching the convention already used for same-day task
+   slugs (e.g. `Mtg-2026-07-05-Define-Policy-Scope`):
+   `WIKI FOSSCELL NITC:Meetings/YYYY-MM-DD-Topic-Slug`
+   (e.g. `Meetings/2026-07-13-Design-Standup`,
+   `Meetings/2026-07-13-Policy-Sync`).
+3. If no clear topic can be named from the transcript, fall back to `-2`,
+   `-3`, etc. rather than guessing at a slug.
+4. Record the resolved title for Step 7.
 
 **Wikitext format:**
 
