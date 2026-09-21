@@ -51,8 +51,9 @@ everything:
 - [`opencode.json`](opencode.json) auto-starts the MCP server — no config.
 - [`AGENTS.md`](AGENTS.md) (the master rulebook, with the task-to-skill
   routing table) loads into your agent automatically.
-- The 20 workflow skills in [`.agents/skills/`](.agents/skills/) become
-  available — meeting minutes, task board, event pages, magazine, audits.
+- The workflow skills — meeting minutes, task board, event pages, magazine,
+  audits — become available (see the
+  [Agent Skills Directory](#agent-skills-directory)).
 
 Then just ask about the wiki. This is the fullest-context way to run an
 agent against the wiki; other clients get the essentials injected at
@@ -143,8 +144,9 @@ time, whichever client it connects from**. Three channels deliver that:
    Jules, and 30+ other agents. Two clients use their own filename, so the
    repo ships thin bridge files pointing at the same rulebook:
    [`CLAUDE.md`](CLAUDE.md) (Claude Code) and [`GEMINI.md`](GEMINI.md)
-   (Gemini CLI). opencode additionally discovers the skills in
-   [`.agents/skills/`](.agents/skills/) — full context, zero setup.
+   (Gemini CLI). opencode additionally discovers the skills listed in the
+   [Agent Skills Directory](#agent-skills-directory) — full context, zero
+   setup.
 2. **Any client, automatically: the launcher injects the rules into the MCP
    handshake.** `start-mcp.js` appends the NITC house-rules summary (and a
    pointer to the canonical wiki rules page) to the server's `instructions`
@@ -154,6 +156,53 @@ time, whichever client it connects from**. Three channels deliver that:
    [`WIKI FOSSCELL NITC:MCP Rules`](https://wiki.fosscell.org/WIKI_FOSSCELL_NITC:MCP_Rules),
    fetchable by any agent with `get-page` — which is exactly what the injected
    instructions tell it to do before its first write.
+
+---
+
+## Agent Skills Directory
+
+Agent skills and standard workflows live on the wiki under
+`WIKI FOSSCELL NITC:MCP-rules/Skills/<skill_name>` and are indexed dynamically
+via Cargo on the central registry page:
+[`WIKI FOSSCELL NITC:MCP-rules/Skills`](https://wiki.fosscell.org/WIKI_FOSSCELL_NITC:MCP-rules/Skills).
+Local mirrors are maintained under [`.agents/skills/`](.agents/skills/):
+
+**Core Wiki Ops & Onboarding**
+
+- [`nitc-wiki-editing`](.agents/skills/nitc-wiki-editing/SKILL.md) — General read/edit, conventions, categories, Cargo/forms
+- [`onboarding`](.agents/skills/onboarding/SKILL.md) — Setup check, automated identity audit, and personal task dashboard
+- [`first-contribution`](.agents/skills/first-contribution/SKILL.md) — Guided first-time content creation (magazine/blog/edit)
+- [`weekly-update-reporter`](.agents/skills/weekly-update-reporter/SKILL.md) — Standup update generator citing on-wiki edits and task movements
+- [`eod-status-report`](.agents/skills/eod-status-report/SKILL.md) — Team-wide end-of-day accountability and status report
+
+**Content & Events**
+
+- [`event-page-creator`](.agents/skills/event-page-creator/SKILL.md) — Structured scaffold for `YYYY:EventName` editions
+- [`magazine-submission`](.agents/skills/magazine-submission/SKILL.md) — Submissions and archiving for the NITC Wiki Magazine aggregator
+- [`nitc-wiki-home-teams`](.agents/skills/nitc-wiki-home-teams/SKILL.md) — Home team hub pages and annual team reports
+
+**Data Ingestion**
+
+- [`hostel-fee-ingest`](.agents/skills/hostel-fee-ingest/SKILL.md) — Ingestion of hostel fee structures from PDFs into Cargo tables
+- [`institute-fee-ingest`](.agents/skills/institute-fee-ingest/SKILL.md) — Ingestion of Senate/GCR institute fee notifications
+- [`bus-timings-ingest`](.agents/skills/bus-timings-ingest/SKILL.md) — Ingestion of campus and Kozhikode city bus schedules
+
+**Task Management & Hygiene**
+
+- [`wiki-task-board`](.agents/skills/wiki-task-board/SKILL.md) — Find, claim, update, and manage tasks backed by WikiTasks
+- [`meeting-processor`](.agents/skills/meeting-processor/SKILL.md) — Meeting transcript parsing into official minutes and tasks
+- [`board-janitor`](.agents/skills/board-janitor/SKILL.md) — Task board cleanup, stale-claim audit, and taxonomy fixes
+
+**Maintenance & Templates**
+
+- [`wiki-gardener`](.agents/skills/wiki-gardener/SKILL.md) — Categorization backlog drain and orphan page linking
+- [`wiki-diagnostics`](.agents/skills/wiki-diagnostics/SKILL.md) — Page-level structural checks, infobox validation, and preload audits
+- [`recent-changes-patroller`](.agents/skills/recent-changes-patroller/SKILL.md) — Live stream patrolling for styling churn, missing categories, and summaries
+- [`rules-drift-auditor`](.agents/skills/rules-drift-auditor/SKILL.md) — Audit local documentation drift against the live wiki state
+- [`cargo-auditor`](.agents/skills/cargo-auditor/SKILL.md) — Deep database audits via `#cargo_query` parser functions
+- [`template-creator`](.agents/skills/template-creator/SKILL.md) — Scaffolding non-Cargo templates, forms, preloads, and inputbox helper pages
+
+---
 
 ## House rules for agents
 
